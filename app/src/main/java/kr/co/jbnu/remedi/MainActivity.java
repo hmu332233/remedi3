@@ -2,9 +2,12 @@ package kr.co.jbnu.remedi;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.ListView;
 
 import java.util.ArrayList;
 
+import kr.co.jbnu.remedi.adapters.BoardAdapter;
+import kr.co.jbnu.remedi.models.Board;
 import kr.co.jbnu.remedi.models.Medicine;
 import kr.co.jbnu.remedi.parser.Medicine_Parser;
 
@@ -16,6 +19,22 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         //asdfasd
         //asdfasdf
+        ArrayList<Board> boards = new ArrayList<>();
+        Board b = new Board("","",null);
+
+        boards.add(b);
+        boards.add(b);
+        boards.add(b);
+        boards.add(b);
+        boards.add(b);
+        boards.add(b);
+        boards.add(b);
+        boards.add(b);
+        boards.add(b);
+
+        ListView boardListView = (ListView) findViewById(R.id.lv_board);
+        boardListView.setAdapter(new BoardAdapter(this,boards));
+
 
         Thread t = new Thread(new Runnable() {
             @Override
@@ -32,8 +51,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        t.start();
-
-
+       // t.start();
     }
+
+
 }

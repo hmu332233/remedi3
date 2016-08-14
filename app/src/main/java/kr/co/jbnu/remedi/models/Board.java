@@ -1,12 +1,9 @@
 package kr.co.jbnu.remedi.models;
 
-import java.util.Date;
+import java.sql.Date;
 
-/**
- * Created by seokhyeon on 2016-08-15.
- */
 public class Board {
-    private String img_name;
+    private String img_url;
     private String content;
     private Answer answer;
     private Date date;
@@ -28,18 +25,18 @@ public class Board {
         this.board_serialnumber = board_serialnumber;
     }
 
-    public Board(String img_name, String content, Answer answer) {
-        this.img_name = img_name;
+    public Board(String img_url, String content, Answer answer) {
+        this.img_url = img_url;
         this.content = content;
         this.answer = answer;
     }
 
-    public String getImg_name() {
-        return img_name;
+    public String getImg_url() {
+        return img_url;
     }
 
-    public void setImg_name(String img_name) {
-        this.img_name = img_name;
+    public void setImg_name(String img_url) {
+        this.img_url = img_url;
     }
 
     public String getContent() {
