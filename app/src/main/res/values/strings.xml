@@ -19,4 +19,7 @@
     <string name="title_activity_ddd">Sign in</string>
     <string name="title_activity_test">Sign in</string>
 
+    <string name="using_agreement"><u>이용약관</u></string>
+    <string name="personal_using_agreement"><u>개인정보 취급 방침</u></string>
+
 </resources>

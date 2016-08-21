@@ -29,8 +29,8 @@ public class Login_Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_);
 
-        initComponetIdAndEvent();
-
+        initComponent();
+        initEvent();
 
 
     }
@@ -40,12 +40,11 @@ public class Login_Activity extends AppCompatActivity {
 
 
 
-    private void initComponetIdAndEvent(){
+    private void initComponent(){
         idText = (EditText) findViewById(R.id.id_text);
         pwText = (EditText) findViewById(R.id.pw_text);
         login_btn = (Button) findViewById(R.id.login_btn);
         result_textview = (TextView) findViewById(R.id.result_text);
-        initEvent();
     }
 
     private void initEvent(){

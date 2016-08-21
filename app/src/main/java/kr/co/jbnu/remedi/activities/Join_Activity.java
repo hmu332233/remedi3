@@ -1,16 +1,29 @@
 package kr.co.jbnu.remedi.activities;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+
+import org.apache.http.util.TextUtils;
+
+import java.io.IOException;
 
 import kr.co.jbnu.remedi.R;
 import kr.co.jbnu.remedi.Utils.ProgressBarDialog;
+import kr.co.jbnu.remedi.gcm.PreferenceUtil;
 import kr.co.jbnu.remedi.serverIDO.ServerConnectionManager;
 import kr.co.jbnu.remedi.serverIDO.ServerConnectionService;
 import retrofit2.Call;
@@ -22,12 +35,21 @@ public class Join_Activity extends AppCompatActivity {
     EditText email_input;
     EditText password_input;
     EditText name_input;
-    Button sign_up_btn;
+    ImageButton sign_up_btn;
 
     String type = "normal";
     private Boolean is_exist = false;
     Context context;
     private  ProgressBarDialog progressBarDialog;
+
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private static final String SENDER_ID = "701682787336";
+
+    private GoogleCloudMessaging _gcm;
+    private String _regId;
+
+
+
     /*
     * Intent로 일반 인지 아닌지 받아줘야함
      * 만약 화면을 바꿀경우 다른 엑티비티로 만들예정
@@ -40,13 +62,15 @@ public class Join_Activity extends AppCompatActivity {
         initComponent();
         initEvent();
 
+
+
     }
 
     private void initComponent(){
         email_input = (EditText)findViewById(R.id.email_input);
         password_input = (EditText)findViewById(R.id.password_input);
         name_input = (EditText)findViewById(R.id.name_input);
-        sign_up_btn = (Button)findViewById(R.id.sign_up_button);
+        sign_up_btn = (ImageButton)findViewById(R.id.sign_up_button);
     }
 
     private void initEvent(){
@@ -60,6 +84,23 @@ public class Join_Activity extends AppCompatActivity {
         });
     }
 
+    private void getGcmRegisterId(){
+        if (checkPlayServices())
+        {
+            _gcm = GoogleCloudMessaging.getInstance(this);
+            _regId = getRegistrationId();
+            System.out.println("reg 확인 : "+_regId);
+
+            if (_regId==null) registerInBackground();
+            else System.out.println("이미 등록된 기기입니다.");
+
+        }
+        else
+        {
+            System.out.println("구글 서비스를 이용 할 수 없습니다");
+        }
+    }
+
     private void joinUser(){
         System.out.println("일반 유저 회원가입 시도");
 
@@ -69,7 +110,7 @@ public class Join_Activity extends AppCompatActivity {
         String email = email_input.getText().toString();
         String pw = password_input.getText().toString();
         String name = name_input.getText().toString();
-        Call<Void> user_join =  serverConnectionService.user_join(email,pw,name,type,"123");
+        Call<Void> user_join =  serverConnectionService.user_join(email,pw,name,type,_regId);
 
 
         user_join.enqueue(new Callback<Void>() {
@@ -113,6 +154,7 @@ public class Join_Activity extends AppCompatActivity {
                     progressBarDialog.dismiss();
                     Toast.makeText(context, "존재하는 아이디 입니다 다른 아이디로 바꿔주세요", Toast.LENGTH_SHORT).show();
                 }else{
+                    getGcmRegisterId();
                     joinUser();
                 }
 
@@ -125,6 +167,125 @@ public class Join_Activity extends AppCompatActivity {
                 Log.w("서버 통신 실패",t.getMessage());
             }
         });
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent)
+    {
+        super.onNewIntent(intent);
+
+        // display received msg
+        String msg = intent.getStringExtra("msg");
+
+        if (!TextUtils.isEmpty(msg));
+
+    }
+
+    // google play service가 사용가능한가
+    private boolean checkPlayServices()
+    {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS)
+        {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode))
+            {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this, PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            }
+            else
+            {
+
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    // registration  id를 가져온다.
+    private String getRegistrationId()
+    {
+        String registrationId = PreferenceUtil.instance(getApplicationContext()).regId();
+        if (TextUtils.isEmpty(registrationId))
+        {
+
+            return null;
+        }
+        int registeredVersion = PreferenceUtil.instance(getApplicationContext()).appVersion();
+        int currentVersion = getAppVersion();
+        if (registeredVersion != currentVersion)
+        {
+
+            return null;
+        }
+        return registrationId;
+    }
+
+    // app version을 가져온다. 뭐에 쓰는건지는 모르겠다.
+    private int getAppVersion()
+    {
+        try
+        {
+            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            return packageInfo.versionCode;
+        }
+        catch (PackageManager.NameNotFoundException e)
+        {
+            // should never happen
+            throw new RuntimeException("Could not get package name: " + e);
+        }
+    }
+
+    // gcm 서버에 접속해서 registration id를 발급받는다.
+    private void registerInBackground()
+    {
+        new AsyncTask<Void, Void, String>()
+        {
+            @Override
+            protected String doInBackground(Void... params)
+            {
+                String msg = "";
+                try
+                {
+                    if (_gcm == null)
+                    {
+                        _gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
+                    }
+                    _regId = _gcm.register(SENDER_ID);
+                    msg = "Device registered, registration ID=" + _regId;
+
+                    // For this demo: we don't need to send it because the device
+                    // will send upstream messages to a server that echo back the
+                    // message using the 'from' address in the message.
+
+                    // Persist the regID - no need to register again.
+                    storeRegistrationId(_regId);
+                }
+                catch (IOException ex)
+                {
+                    msg = "Error :" + ex.getMessage();
+                    // If there is an error, don't just keep trying to register.
+                    // Require the user to click a button again, or perform
+                    // exponential back-off.
+                }
+
+                return msg;
+            }
+
+            @Override
+            protected void onPostExecute(String msg)
+            {
+
+            }
+        }.execute(null, null, null);
+    }
+
+    // registraion id를 preference에 저장한다.
+    private void storeRegistrationId(String regId)
+    {
+        int appVersion = getAppVersion();
+
+        PreferenceUtil.instance(getApplicationContext()).putRedId(regId);
+        PreferenceUtil.instance(getApplicationContext()).putAppVersion(appVersion);
     }
 
 

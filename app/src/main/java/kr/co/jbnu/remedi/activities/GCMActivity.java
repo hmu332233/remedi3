@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -51,7 +50,6 @@ public class GCMActivity extends AppCompatActivity {
         }
         else
         {
-            Log.i("MainActivity.java | onCreate", "|No valid Google Play Services APK found.|");
             _textStatus.append("\n No valid Google Play Services APK found.\n");
         }
 
@@ -68,7 +66,7 @@ public class GCMActivity extends AppCompatActivity {
 
         // display received msg
         String msg = intent.getStringExtra("msg");
-        Log.i("MainActivity.java | onNewIntent", "|" + msg + "|");
+
         if (!TextUtils.isEmpty(msg))
             _textStatus.append("\n" + msg + "\n");
     }
@@ -85,7 +83,7 @@ public class GCMActivity extends AppCompatActivity {
             }
             else
             {
-                Log.i("MainActivity.java | checkPlayService", "|This device is not supported.|");
+
                 _textStatus.append("\n This device is not supported.\n");
                 finish();
             }
@@ -100,7 +98,7 @@ public class GCMActivity extends AppCompatActivity {
         String registrationId = PreferenceUtil.instance(getApplicationContext()).regId();
         if (TextUtils.isEmpty(registrationId))
         {
-            Log.i("MainActivity.java | getRegistrationId", "|Registration not found.|");
+
             _textStatus.append("\n Registration not found.\n");
             return "";
         }
@@ -108,7 +106,7 @@ public class GCMActivity extends AppCompatActivity {
         int currentVersion = getAppVersion();
         if (registeredVersion != currentVersion)
         {
-            Log.i("MainActivity.java | getRegistrationId", "|App version changed.|");
+
             _textStatus.append("\n App version changed.\n");
             return "";
         }
@@ -169,7 +167,7 @@ public class GCMActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(String msg)
             {
-                Log.i("MainActivity.java | onPostExecute", "|" + msg + "|");
+
                 _textStatus.append(msg);
             }
         }.execute(null, null, null);
@@ -179,7 +177,7 @@ public class GCMActivity extends AppCompatActivity {
     private void storeRegistrationId(String regId)
     {
         int appVersion = getAppVersion();
-        Log.i("MainActivity.java | storeRegistrationId", "|" + "Saving regId on app version " + appVersion + "|");
+
         PreferenceUtil.instance(getApplicationContext()).putRedId(regId);
         PreferenceUtil.instance(getApplicationContext()).putAppVersion(appVersion);
     }

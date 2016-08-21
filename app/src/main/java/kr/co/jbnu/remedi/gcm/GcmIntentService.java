@@ -7,12 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
-import kr.co.jbnu.remedi.activities.MainActivity;
 import kr.co.jbnu.remedi.R;
+import kr.co.jbnu.remedi.activities.MainActivity;
 
 /**
  * Created by seokhyeon on 2016-08-20.
@@ -57,7 +56,7 @@ public class GcmIntentService extends IntentService
                 String msg = intent.getStringExtra("msg");
                 // Post notification of received message.
 //            sendNotification("Received: " + extras.toString());
-                sendNotification("Received: " + msg);
+                sendNotification(msg);
                 //Log.i("GcmIntentService.java | onHandleIntent", "Received: " + extras.toString());
             }
         }
@@ -78,8 +77,8 @@ public class GcmIntentService extends IntentService
 
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this).setSmallIcon(R.drawable.asdf)
-                .setContentTitle("GCM Notification")
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this).setSmallIcon(R.drawable.appicon_2)
+                .setContentTitle("리메디")
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(msg))
                 .setContentText(msg)
                 .setAutoCancel(true)

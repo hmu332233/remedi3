@@ -8,8 +8,8 @@
     tools:context=".activities.GCMActivity">
 
     <LinearLayout
-        android:layout_width="300dp"
-        android:layout_height="250dp"
+        android:layout_width="250dp"
+        android:layout_height="200dp"
         android:orientation="horizontal">
 
         <TextView
@@ -17,14 +17,32 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             />
-
-        <com.wang.avi.AVLoadingIndicatorView
-            android:layout_weight="6"
+        <LinearLayout
             android:layout_width="0dp"
+            android:layout_weight="6"
             android:layout_height="match_parent"
-            app:indicatorName="BallClipRotateIndicator"
-            android:id="@+id/progressbar"
-            />
+            android:orientation="vertical">
+
+            <com.wang.avi.AVLoadingIndicatorView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="8"
+                app:indicatorName="BallClipRotateIndicator"
+                android:id="@+id/progressbar"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2"
+                android:text="서버에 요청중.."
+                android:gravity="center"
+                android:textColor="@color/cardview_light_background"
+                 />
+
+        </LinearLayout>
+        
+
 
         <TextView
             android:layout_weight="2"
