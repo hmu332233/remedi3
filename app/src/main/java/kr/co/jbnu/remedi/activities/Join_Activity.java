@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import kr.co.jbnu.remedi.R;
+import kr.co.jbnu.remedi.Utils.ProgressBarDialog;
 import kr.co.jbnu.remedi.serverIDO.ServerConnectionManager;
 import kr.co.jbnu.remedi.serverIDO.ServerConnectionService;
 import retrofit2.Call;
@@ -26,7 +27,7 @@ public class Join_Activity extends AppCompatActivity {
     String type = "normal";
     private Boolean is_exist = false;
     Context context;
-
+    private  ProgressBarDialog progressBarDialog;
     /*
     * Intent로 일반 인지 아닌지 받아줘야함
      * 만약 화면을 바꿀경우 다른 엑티비티로 만들예정
@@ -52,6 +53,8 @@ public class Join_Activity extends AppCompatActivity {
         sign_up_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressBarDialog = new ProgressBarDialog(Join_Activity.this);
+                progressBarDialog.show();
                 checkExistUser();
             }
         });
@@ -75,12 +78,14 @@ public class Join_Activity extends AppCompatActivity {
             public void onResponse(Call<Void> call, Response<Void> response) {
                 //is_exist = response.body();
                 System.out.println("존재 하는 값 ");
-
+                progressBarDialog.dismiss();
+                Toast.makeText(context, "회원가입 완료", Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 //final TextView textView = (TextView) findViewById(R.id.textView);
                 //textView.setText("Something went wrong: " + t.getMessage());
+                progressBarDialog.dismiss();
                 Log.w("서버 통신 실패",t.getMessage());
             }
         });
@@ -105,6 +110,7 @@ public class Join_Activity extends AppCompatActivity {
                 is_exist = response.body();
                 System.out.println("존재 하는 값 확인"+is_exist.toString());
                 if(is_exist==true){
+                    progressBarDialog.dismiss();
                     Toast.makeText(context, "존재하는 아이디 입니다 다른 아이디로 바꿔주세요", Toast.LENGTH_SHORT).show();
                 }else{
                     joinUser();
@@ -115,6 +121,7 @@ public class Join_Activity extends AppCompatActivity {
             public void onFailure(Call<Boolean> call, Throwable t) {
                 //final TextView textView = (TextView) findViewById(R.id.textView);
                 //textView.setText("Something went wrong: " + t.getMessage());
+                progressBarDialog.dismiss();
                 Log.w("서버 통신 실패",t.getMessage());
             }
         });

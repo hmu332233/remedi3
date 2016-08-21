@@ -11,7 +11,7 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
-import kr.co.jbnu.remedi.MainActivity;
+import kr.co.jbnu.remedi.activities.MainActivity;
 import kr.co.jbnu.remedi.R;
 
 /**
@@ -58,7 +58,7 @@ public class GcmIntentService extends IntentService
                 // Post notification of received message.
 //            sendNotification("Received: " + extras.toString());
                 sendNotification("Received: " + msg);
-                Log.i("GcmIntentService.java | onHandleIntent", "Received: " + extras.toString());
+                //Log.i("GcmIntentService.java | onHandleIntent", "Received: " + extras.toString());
             }
         }
         // Release the wake lock provided by the WakefulBroadcastReceiver.
