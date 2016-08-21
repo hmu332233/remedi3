@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/et_medicine_name"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:hint="약 이름"/>
+
+
+        <info.hoang8f.widget.FButton
+            android:id="@+id/btn_search"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="검 색"
+
+            android:textColor="#ffffff"
+            fbutton:buttonColor="@color/titlebar"
+            fbutton:shadowColor="#5014a1"
+            fbutton:shadowEnabled="true"
+            fbutton:shadowHeight="2dp"
+            fbutton:cornerRadius="8dp"
+
+            />
+
+
+    </LinearLayout>
+
+
+    <ListView
+        android:id="@+id/lv_medicine"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:dividerHeight="10dp"
+        android:layout_marginTop="10dp"
+        android:scrollbars="none"
+        android:layout_gravity="center"
+
+        android:divider="#00000000"/>
+
+</LinearLayout>

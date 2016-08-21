@@ -2,5 +2,15 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#383838</color>
+
+    <color name="titlebar">#62369e</color>
+    <color name="background">#7e7e7e</color>
+    <!--
+    <color name="background">#4d4d4d</color>
+    -->
+
+    <color name="medicineListColor">#ffffff</color>
+
+
 </resources>

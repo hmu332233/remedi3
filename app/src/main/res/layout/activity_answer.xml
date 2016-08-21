@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:background="@color/background">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_gravity="center"
+        android:layout_width="300dp"
+        android:layout_height="350dp"
+        card_view:cardCornerRadius="5dp"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/asdf"
+                android:scaleType="fitXY"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text=" - 제목이 들어갈 칸입니다!" />
+
+            <LinearLayout
+                android:id="@+id/layout_btn_input"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <!--누른후-->
+                <LinearLayout
+
+                    android:id="@+id/layout_input"
+                    android:layout_margin="15dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/et_answer_content"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:lines="5"
+                        android:gravity="top|left"
+                        android:inputType="textMultiLine"
+                        android:background="@drawable/background_textarea"
+                        />
+
+                    <LinearLayout
+                        android:layout_weight="3"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:gravity="right"
+                        android:paddingTop="5dp">
+
+                        <TextView
+                            android:id="@+id/tv_medicine_name"
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="약이름 검색"/>
+
+
+                        <info.hoang8f.widget.FButton
+                            android:id="@+id/btn_add_answer"
+                            android:layout_weight="3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="답변하기"
+                            android:textSize="10dp"
+                            android:textColor="#ffffff"
+                            fbutton:buttonColor="@color/titlebar"
+                            fbutton:shadowColor="#5014a1"
+                            fbutton:shadowEnabled="true"
+                            fbutton:shadowHeight="2dp"
+                            fbutton:cornerRadius="8dp"
+
+                            />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include layout="@layout/layout_medicine_list"/>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

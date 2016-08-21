@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    >
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cv_btn_extra"
+        android:layout_gravity="center"
+        android:layout_marginTop="1dp"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        card_view:cardCornerRadius="5dp"
+        >
+
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_margin="5dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:text="상세정보"
+                    android:layout_gravity="center"
+                    />
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="이름 : "/>
+
+                    <TextView
+                        android:id="@+id/medicine_name"
+                        android:layout_weight="1"
+                        android:gravity="right"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="테스트"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/background"/>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="성분 : "/>
+
+                    <TextView
+                        android:id="@+id/medicine_element"
+                        android:layout_weight="1"
+                        android:gravity="right"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="테스트"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/background"/>
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="회사 : "/>
+
+                    <TextView
+                        android:id="@+id/medicine_enterprise"
+                        android:layout_weight="1"
+                        android:gravity="right"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="테스트"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/background"/>
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="번호 : "/>
+
+                    <TextView
+                        android:id="@+id/medicine_standardCode"
+                        android:layout_weight="1"
+                        android:gravity="right"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="테스트"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/background"/>
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="카테고리 : "/>
+
+                    <TextView
+                        android:id="@+id/medicine_category"
+                        android:layout_weight="1"
+                        android:gravity="right"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="테스트"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/background"/>
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="효과 : "/>
+
+                    <TextView
+                        android:id="@+id/medicine_effect"
+                        android:layout_weight="1"
+                        android:gravity="right"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="테스트"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/background"/>
+
+
+
+
+            </LinearLayout>
+
+        </ScrollView>
+
+
+
+
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

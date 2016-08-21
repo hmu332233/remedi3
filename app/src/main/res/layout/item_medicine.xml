@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <TextView
+            android:id="@+id/medicine_name"
+            android:layout_weight="15"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/medicineListColor"
+            android:text="제품명"/>
+
+        <TextView
+            android:id="@+id/medicine_ingredient"
+            android:layout_weight="15"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/medicineListColor"
+            android:text="주성분"/>
+
+        <TextView
+            android:id="@+id/medicine_ingredientCount"
+            android:layout_weight="20"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/medicineListColor"
+            android:text="주성분수"/>
+
+        <TextView
+            android:id="@+id/medicine_enterprise"
+            android:layout_weight="20"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/medicineListColor"
+            android:text="업체명"/>
+
+        <TextView
+            android:id="@+id/medicine_category"
+            android:layout_weight="20"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/medicineListColor"
+            android:text="전문/일반"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/medicineListColor"/>
+
+</LinearLayout>

@@ -1,9 +1,11 @@
 package kr.co.jbnu.remedi.models;
 
+import java.io.Serializable;
+
 /**
  * Created by seokhyeon on 2016-08-15.
  */
-public class Reply {
+public class Reply implements Serializable {
     private String content;
     private String UserId;
     private int reply_serialnumber;

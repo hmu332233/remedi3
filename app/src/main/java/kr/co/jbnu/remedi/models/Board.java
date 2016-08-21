@@ -1,8 +1,9 @@
 package kr.co.jbnu.remedi.models;
 
+import java.io.Serializable;
 import java.sql.Date;
 
-public class Board {
+public class Board implements Serializable{
     private String img_url;
     private String content;
     private Answer answer;

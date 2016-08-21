@@ -1,6 +1,8 @@
 package kr.co.jbnu.remedi.models;
 
-public class Medicine {
+import java.io.Serializable;
+
+public class Medicine implements Serializable {
 
 	private String name;			//이름
 	private String ingredient; 		//주성분

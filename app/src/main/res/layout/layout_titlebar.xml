@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/titlebar"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:gravity="center"
+    >
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:src="@mipmap/common_main_logo"/>
+
+
+
+</LinearLayout>
+

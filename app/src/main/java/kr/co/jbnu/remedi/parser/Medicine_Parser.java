@@ -18,9 +18,9 @@ import kr.co.jbnu.remedi.models.Medicine;
 
 public class Medicine_Parser {
 	
-	public Medicine requestMedicine_detail(Medicine medicine , String codeNumber)
+	public Medicine requestMedicine_detail(Medicine medicine)
 	{
-		String url = "http://drug.mfds.go.kr/html/bxsSearchDrugProduct.jsp?item_Seq="+codeNumber;
+		String url = "http://drug.mfds.go.kr/html/bxsSearchDrugProduct.jsp?item_Seq="+medicine.getCodeNumber();
 	
 		Document doc = requestHtmlDoc(url);
 		
@@ -82,7 +82,7 @@ public class Medicine_Parser {
 		String[] detailData = {
 				detailDatas.get(0).text().split("효능효과 ")[1],//효능효과
 				detailDatas.get(1).text().split("용법용량 ")[1],//용법용량
-				detailDatas.get(2).text().split("사용상의 주의사항 ")[1]//사용상의 주의사항
+				detailDatas.get(2).text().split("주의사항 ")[1]//사용상의 주의사항
 		};
 		/*
 		for( String t : detailData)

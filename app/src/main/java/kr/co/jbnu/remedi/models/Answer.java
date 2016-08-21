@@ -1,12 +1,13 @@
 package kr.co.jbnu.remedi.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
 /**
  * Created by seokhyeon on 2016-08-15.
  */
-public class Answer {
+public class Answer implements Serializable {
     private String medi_name;
     private String answer_content;
     private String medi_element;
