@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import kr.co.jbnu.remedi.GlobalValue;
 import kr.co.jbnu.remedi.R;
 import kr.co.jbnu.remedi.adapters.BoardAdapter;
 import kr.co.jbnu.remedi.models.Answer;
