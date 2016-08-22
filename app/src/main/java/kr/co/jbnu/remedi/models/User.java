@@ -15,6 +15,7 @@ public class User {
     private String name;
     private String user_type;
     private String profile_imgname;
+    private String register_id;
     private static User user;
     private ArrayList<Board> userBoardList;
 
@@ -87,5 +88,13 @@ public class User {
 
     public static void setUser(User given_user){
         user = given_user;
+    }
+
+    public String getRegister_id() {
+        return register_id;
+    }
+
+    public void setRegister_id(String register_id) {
+        this.register_id = register_id;
     }
 }

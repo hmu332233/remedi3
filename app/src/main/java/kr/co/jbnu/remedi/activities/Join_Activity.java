@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -35,9 +36,15 @@ public class Join_Activity extends AppCompatActivity {
     EditText email_input;
     EditText password_input;
     EditText name_input;
+
+    ImageButton normal_user_img_btn;
+    ImageButton pharmist_user_img_btn;
+
     ImageButton sign_up_btn;
 
-    String type = "normal";
+
+
+    String type = null;
     private Boolean is_exist = false;
     Context context;
     private  ProgressBarDialog progressBarDialog;
@@ -46,7 +53,7 @@ public class Join_Activity extends AppCompatActivity {
     private static final String SENDER_ID = "701682787336";
 
     private GoogleCloudMessaging _gcm;
-    private String _regId;
+    private String registration_id = null;
 
 
 
@@ -70,29 +77,70 @@ public class Join_Activity extends AppCompatActivity {
         email_input = (EditText)findViewById(R.id.email_input);
         password_input = (EditText)findViewById(R.id.password_input);
         name_input = (EditText)findViewById(R.id.name_input);
+        normal_user_img_btn = (ImageButton)findViewById(R.id.normal_user_join_btn);
+        pharmist_user_img_btn = (ImageButton)findViewById(R.id.pharm_user_join_btn);
         sign_up_btn = (ImageButton)findViewById(R.id.sign_up_button);
     }
 
     private void initEvent(){
+
+        normal_user_img_btn.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                if(event.getAction()==MotionEvent.ACTION_DOWN){
+                    normal_user_img_btn.setImageResource(R.drawable.signup_common_btn_on);
+                    pharmist_user_img_btn.setImageResource(R.drawable.signup_pharmacist_btn_off);
+                    type = "normal";
+                }
+
+                return false;
+            }
+        });
+
+        pharmist_user_img_btn.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                if(event.getAction()==MotionEvent.ACTION_DOWN){
+                    pharmist_user_img_btn.setImageResource(R.drawable.signup_pharmacist_btn_on);
+                    normal_user_img_btn.setImageResource(R.drawable.signup_common_btn_off);
+                    type = "pharm";
+                }
+
+                return false;
+            }
+        });
+
+
+
         sign_up_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 progressBarDialog = new ProgressBarDialog(Join_Activity.this);
                 progressBarDialog.show();
-                checkExistUser();
+                if(type==null) {
+                    progressBarDialog.dismiss();
+                    Toast.makeText(context, "회원님의 종류를 선택해주세요", Toast.LENGTH_SHORT).show();
+                }
+                else checkExistUser();
+
             }
         });
     }
 
-    private void getGcmRegisterId(){
+    private void JoinUserAftergetGcmRegisterId(){
         if (checkPlayServices())
         {
             _gcm = GoogleCloudMessaging.getInstance(this);
-            _regId = getRegistrationId();
-            System.out.println("reg 확인 : "+_regId);
+            registration_id = getRegistrationId();
+            System.out.println("reg 확인 : "+registration_id);
 
-            if (_regId==null) registerInBackground();
-            else System.out.println("이미 등록된 기기입니다.");
+            if (registration_id==null) registerInBackground();
+            else {
+                System.out.println("이미 등록된 기기입니다.");
+                joinUser();
+            }
 
         }
         else
@@ -110,7 +158,8 @@ public class Join_Activity extends AppCompatActivity {
         String email = email_input.getText().toString();
         String pw = password_input.getText().toString();
         String name = name_input.getText().toString();
-        Call<Void> user_join =  serverConnectionService.user_join(email,pw,name,type,_regId);
+        System.out.println(registration_id+"id 확인");
+        Call<Void> user_join =  serverConnectionService.user_join(email,pw,name,type,registration_id);
 
 
         user_join.enqueue(new Callback<Void>() {
@@ -154,8 +203,7 @@ public class Join_Activity extends AppCompatActivity {
                     progressBarDialog.dismiss();
                     Toast.makeText(context, "존재하는 아이디 입니다 다른 아이디로 바꿔주세요", Toast.LENGTH_SHORT).show();
                 }else{
-                    getGcmRegisterId();
-                    joinUser();
+                    JoinUserAftergetGcmRegisterId();
                 }
 
             }
@@ -240,9 +288,11 @@ public class Join_Activity extends AppCompatActivity {
     {
         new AsyncTask<Void, Void, String>()
         {
+
             @Override
             protected String doInBackground(Void... params)
             {
+                String reg_id = "";
                 String msg = "";
                 try
                 {
@@ -250,15 +300,15 @@ public class Join_Activity extends AppCompatActivity {
                     {
                         _gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
                     }
-                    _regId = _gcm.register(SENDER_ID);
-                    msg = "Device registered, registration ID=" + _regId;
-
+                    reg_id = _gcm.register(SENDER_ID);
+                    msg = "Device registered, registration ID=" + reg_id;
+                    System.out.println("gcm async 안"+reg_id);
                     // For this demo: we don't need to send it because the device
                     // will send upstream messages to a server that echo back the
                     // message using the 'from' address in the message.
 
                     // Persist the regID - no need to register again.
-                    storeRegistrationId(_regId);
+                    storeRegistrationId(reg_id);
                 }
                 catch (IOException ex)
                 {
@@ -268,13 +318,14 @@ public class Join_Activity extends AppCompatActivity {
                     // exponential back-off.
                 }
 
-                return msg;
+                return reg_id;
             }
 
             @Override
-            protected void onPostExecute(String msg)
+            protected void onPostExecute(String reg_id)
             {
-
+                    registration_id = reg_id;
+                    joinUser();
             }
         }.execute(null, null, null);
     }
