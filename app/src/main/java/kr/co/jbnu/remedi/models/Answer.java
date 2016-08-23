@@ -8,8 +8,9 @@ import java.util.Date;
  * Created by seokhyeon on 2016-08-15.
  */
 public class Answer implements Serializable {
+    private int id;
     private String medi_name;
-    private String answer_content;
+    private String answoer_content;
     private String medi_element;
     private String medi_company;
     private String medi_serialnumber;
@@ -17,29 +18,29 @@ public class Answer implements Serializable {
     private String medi_effect;
     private String pharm_id;
     private String pharm_imgname;
-    private ArrayList<Reply> repliesList;
-    private Date date;
-    private int Answer_serialnumber;
+    private int board_id;
+    private ArrayList<Reply> replies;
+    private Date updated_at;
 
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public int getAnswer_serialnumber() {
-        return Answer_serialnumber;
-    }
-
-    public void setAnswer_serialnumber(int answer_serialnumber) {
-        Answer_serialnumber = answer_serialnumber;
+    public Answer(int id, String medi_name, String answer_content, String medi_element, String medi_company, String medi_serialnumber, String medi_category, String medi_effect, String pharm_id, String pharm_imgname, int board_id, ArrayList<Reply> repliesList, Date updated_at) {
+        this.id = id;
+        this.medi_name = medi_name;
+        this.answoer_content = answer_content;
+        this.medi_element = medi_element;
+        this.medi_company = medi_company;
+        this.medi_serialnumber = medi_serialnumber;
+        this.medi_category = medi_category;
+        this.medi_effect = medi_effect;
+        this.pharm_id = pharm_id;
+        this.pharm_imgname = pharm_imgname;
+        this.board_id = board_id;
+        this.replies = repliesList;
+        this.updated_at = updated_at;
     }
 
     public Answer(String medi_name, String answer_content, String medi_element, String medi_company, String medi_serialnumber, String medi_category, String medi_effect, String pharm_id, String pharm_imgname) {
         this.medi_name = medi_name;
-        this.answer_content = answer_content;
+        this.answoer_content = answer_content;
         this.medi_element = medi_element;
         this.medi_company = medi_company;
         this.medi_serialnumber = medi_serialnumber;
@@ -49,12 +50,12 @@ public class Answer implements Serializable {
         this.pharm_imgname = pharm_imgname;
     }
 
-    public ArrayList<Reply> getRepliesList() {
-        return repliesList;
+    public int getId() {
+        return id;
     }
 
-    public void setRepliesList(ArrayList<Reply> repliesList) {
-        this.repliesList = repliesList;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getMedi_name() {
@@ -66,11 +67,11 @@ public class Answer implements Serializable {
     }
 
     public String getAnswer_content() {
-        return answer_content;
+        return answoer_content;
     }
 
     public void setAnswer_content(String answer_content) {
-        this.answer_content = answer_content;
+        this.answoer_content = answer_content;
     }
 
     public String getMedi_element() {
@@ -127,5 +128,29 @@ public class Answer implements Serializable {
 
     public void setPharm_imgname(String pharm_imgname) {
         this.pharm_imgname = pharm_imgname;
+    }
+
+    public int getBoard_id() {
+        return board_id;
+    }
+
+    public void setBoard_id(int board_id) {
+        this.board_id = board_id;
+    }
+
+    public ArrayList<Reply> getRepliesList() {
+        return replies;
+    }
+
+    public void setRepliesList(ArrayList<Reply> repliesList) {
+        this.replies = repliesList;
+    }
+
+    public Date getUpdated_at() {
+        return updated_at;
+    }
+
+    public void setUpdated_at(Date updated_at) {
+        this.updated_at = updated_at;
     }
 }

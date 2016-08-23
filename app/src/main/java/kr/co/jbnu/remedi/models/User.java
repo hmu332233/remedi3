@@ -31,6 +31,12 @@ public class User {
         this.userBoardList = userBoardList;
     }
 
+    public User(String email,String name,String user_type){
+        this.email = email;
+        this.name = name;
+        this.user_type = user_type;
+    }
+
     public int getId() {
         return id;
     }

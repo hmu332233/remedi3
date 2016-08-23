@@ -11,16 +11,23 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import kr.co.jbnu.remedi.R;
 import kr.co.jbnu.remedi.Utils.GlobalValue;
+import kr.co.jbnu.remedi.Utils.ProgressBarDialog;
 import kr.co.jbnu.remedi.adapters.BoardAdapter;
 import kr.co.jbnu.remedi.models.Answer;
 import kr.co.jbnu.remedi.models.Board;
 import kr.co.jbnu.remedi.models.Medicine;
 import kr.co.jbnu.remedi.models.User;
+import kr.co.jbnu.remedi.serverIDO.ServerConnectionManager;
+import kr.co.jbnu.remedi.serverIDO.ServerConnectionService;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,6 +35,10 @@ public class MainActivity extends AppCompatActivity {
     ListView boardListView;
     BoardAdapter boardAdapter;
     ArrayList<Board> boards;
+
+    private ProgressBarDialog progressBarDialog;
+    private Boolean isConnectionOk = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,8 +54,8 @@ public class MainActivity extends AppCompatActivity {
         boards.add(c);
         boards.add(d);
 
-        Board b2 = new Board("","답변이 달려있음",new Answer("","이건답변입니다","","","","","","",""));
-        boards.add(b2);
+        //Board b2 = new Board("","답변이 달려있음",new Answer("","이건답변입니다","","","","","","",""));
+        //boards.add(b2);
 
         User user = new User(1,"email","name", User.PHARM,"a",boards);
         boardAdapter = new BoardAdapter(this,user.getUser_type(),user.getUserBoardList());
@@ -161,11 +172,25 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                progressBarDialog = new ProgressBarDialog(MainActivity.this);
+                progressBarDialog.show();
+                //user 임시 세팅
+                User user = new User("rupitere@naver.com","고석현","normal");
+                User.setUser(user);
+
+
+
                 Answer answer = new Answer(medicine.getName(),et_answer.getText().toString(),medicine.getShape(),
                         medicine.getEnterprise(),medicine.getStandardCode(),medicine.getCategory(),medicine.getEffect(),"","");
+                System.out.println("medi category 확인 : "+answer.getMedi_category());
+                //board id 임시 세팅
+                board.setId(4);
                 board.setAnswer(answer);
 
                 boards.set(index,board);
+
+                register_answer(board.getId(),answer);
+
                 boardAdapter.notifyDataSetChanged();
             }
         });
@@ -186,5 +211,43 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(intent, GlobalValue.TAKE_CAMERA);
+    }
+
+    private void register_answer(int board_id,Answer answer){
+        System.out.println("질문 등록 요청");
+
+        ServerConnectionManager serverConnectionManager = ServerConnectionManager.getInstance();
+        ServerConnectionService serverConnectionService = serverConnectionManager.getServerConnection();
+
+        //user 임시 세팅
+        User user = new User("rupitere@naver.com","고석현","normal");
+        User.setUser(user);
+
+        Call<Boolean> registeranswer = serverConnectionService.register_answer(board_id,answer.getMedi_name(),answer.getAnswer_content(),answer.getMedi_element()
+        ,answer.getMedi_company(),answer.getMedi_serialnumber(), answer.getMedi_category(),answer.getMedi_effect(),User.getInstance().getEmail());
+
+        registeranswer.enqueue(new Callback<Boolean>() {
+
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                isConnectionOk = response.body();
+                System.out.println("존재 하는 값 확인"+isConnectionOk.toString());
+                if(isConnectionOk==true){
+                    progressBarDialog.dismiss();
+                    Toast.makeText(getApplicationContext(), "답변 등록 완료", Toast.LENGTH_SHORT).show();
+                }else{
+                    progressBarDialog.dismiss();
+                    Toast.makeText(getApplicationContext(), "답변 등록 오류", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                //final TextView textView = (TextView) findViewById(R.id.textView);
+                //textView.setText("Something went wrong: " + t.getMessage());
+                progressBarDialog.dismiss();
+                Log.w("서버 통신 실패",t.getMessage());
+            }
+        });
     }
 }

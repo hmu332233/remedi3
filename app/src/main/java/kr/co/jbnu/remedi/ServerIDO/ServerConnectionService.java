@@ -30,8 +30,25 @@ public interface ServerConnectionService {
     Call<Void> update_gcm_register_id(@Field("email") String email,@Field("reg_id") String reg_id);
 
     @FormUrlEncoded
+    @POST("/mobile/register_board")
+    Call<Boolean> register_board(@Field("email") String email,@Field("img_name") String img_name, @Field("content") String content);
+
+    @FormUrlEncoded
+    @POST("/mobile/register_answer")
+    Call<Boolean> register_answer(@Field("board_id") int board_id,@Field("medi_name") String medi_name,@Field("answer_content") String answer_content,
+                                  @Field("medi_element") String medi_element,@Field("medi_company") String medi_company,@Field("medi_serialnumber") String medi_serialnumber,
+                                  @Field("medi_category") String medi_category,@Field("medi_effect") String medi_effect,@Field("pharm_email") String pharm_email);
+
+
+    @FormUrlEncoded
     @POST("/mobile/get_normaluser_board")
     Call<ArrayList<Board>> get_normaluser_board(@Field("email") String email);
+
+    @FormUrlEncoded
+    @POST("/mobile/register_reply")
+    Call<Boolean> register_reply(@Field("content") String content,@Field("email") String email,@Field("answer_id") int answer_id);
+
+
 
     @FormUrlEncoded
     @POST("/mobile/get_pharmacist_normalboard")
