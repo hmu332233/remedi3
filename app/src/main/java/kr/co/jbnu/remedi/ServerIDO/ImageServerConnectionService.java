@@ -15,7 +15,7 @@ public interface ImageServerConnectionService {
 
     @Multipart
     @POST("/viate/storeimg")
-    Call<ResponseBody> upload(@Part("description") RequestBody description,
+    Call<ResponseBody> upload(@Part("image_name") RequestBody img_name,
                               @Part MultipartBody.Part file);
 
 }

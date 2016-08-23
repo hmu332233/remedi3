@@ -15,6 +15,7 @@ import android.widget.Toast;
 import java.io.File;
 
 import kr.co.jbnu.remedi.R;
+import kr.co.jbnu.remedi.Utils.MakeFileName;
 import kr.co.jbnu.remedi.Utils.ProgressBarDialog;
 import kr.co.jbnu.remedi.models.User;
 import kr.co.jbnu.remedi.serverIDO.ImageServerConnectionManager;
@@ -39,6 +40,7 @@ public class WriteBoardActivity extends AppCompatActivity {
     private ProgressBarDialog progressBarDialog;
     private Boolean isConnectionOk = false;
     private Uri imageUri;
+    private String imagefilename = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +63,7 @@ public class WriteBoardActivity extends AppCompatActivity {
             public void onClick(View v) {
                 progressBarDialog = new ProgressBarDialog(WriteBoardActivity.this);
                 progressBarDialog.show();
-                register_board();
+                uploadFile(imageUri);
                 //Board board = new Board("",et_question.getText().toString(),null);
 
                 //Intent intent = new Intent();
@@ -82,7 +84,9 @@ public class WriteBoardActivity extends AppCompatActivity {
         User user = new User("rupitere@naver.com","고석현","normal");
         User.setUser(user);
 
-        Call<Boolean> registerboard = serverConnectionService.register_board(User.getInstance().getEmail(),"dummy_img_name",et_question.getText().toString());
+        
+
+        Call<Boolean> registerboard = serverConnectionService.register_board(User.getInstance().getEmail(),imagefilename,et_question.getText().toString());
 
         registerboard.enqueue(new Callback<Boolean>() {
 
@@ -93,7 +97,6 @@ public class WriteBoardActivity extends AppCompatActivity {
                 if(isConnectionOk==true){
                     progressBarDialog.dismiss();
                     Toast.makeText(getApplicationContext(), "게시물 등록 완료", Toast.LENGTH_SHORT).show();
-                    uploadFile(imageUri);
                 }else{
                     progressBarDialog.dismiss();
                     Toast.makeText(getApplicationContext(), "게시물 등록 오류", Toast.LENGTH_SHORT).show();
@@ -112,14 +115,13 @@ public class WriteBoardActivity extends AppCompatActivity {
 
     private void uploadFile(Uri fileUri) {
         // create upload service client
-
+        System.out.println("이미지 업로드 요청");
         ImageServerConnectionManager serverConnectionManager = ImageServerConnectionManager.getInstance();
         ImageServerConnectionService service = serverConnectionManager.getServerConnection();
 
 
         // https://github.com/iPaulPro/aFileChooser/blob/master/aFileChooser/src/com/ipaulpro/afilechooser/utils/FileUtils.java
         // use the FileUtils to get the actual file by uri
-        System.out.println("여긴데 : "+fileUri.getPath());
         File file = new File(getRealPathFromURI(fileUri));
 
         // create RequestBody instance from file
@@ -131,18 +133,22 @@ public class WriteBoardActivity extends AppCompatActivity {
                 MultipartBody.Part.createFormData("picture", file.getName(), requestFile);
 
         // add another part within the multipart request
-        String descriptionString = file.getName();
-        RequestBody description =
+
+        imagefilename = file.getName();
+        imagefilename = MakeFileName.getInstance().makefilename(imagefilename);
+
+        RequestBody img_name =
                 RequestBody.create(
-                        MediaType.parse("multipart/form-data"), descriptionString);
+                        MediaType.parse("multipart/form-data"), imagefilename);
 
         // finally, execute the request
-        Call<ResponseBody> call = service.upload(description, body);
+        Call<ResponseBody> call = service.upload(img_name, body);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call,
                                    Response<ResponseBody> response) {
                 Log.v("Upload", "success");
+                register_board();
             }
 
             @Override
