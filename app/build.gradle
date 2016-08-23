@@ -41,6 +41,11 @@ dependencies {
     compile 'com.github.clans:fab:1.6.4'
 
 
+
+    compile 'de.hdodenhof:circleimageview:2.1.0'
+
+
+
     //---------석현형
     compile 'com.squareup.retrofit2:retrofit:2.0.1'
     compile 'com.squareup.retrofit2:converter-gson:2.0.1'

@@ -22,6 +22,7 @@ import kr.co.jbnu.remedi.adapters.BoardAdapter;
 import kr.co.jbnu.remedi.models.Answer;
 import kr.co.jbnu.remedi.models.Board;
 import kr.co.jbnu.remedi.models.Medicine;
+import kr.co.jbnu.remedi.models.Reply;
 import kr.co.jbnu.remedi.models.User;
 import kr.co.jbnu.remedi.serverIDO.ServerConnectionManager;
 import kr.co.jbnu.remedi.serverIDO.ServerConnectionService;
@@ -39,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBarDialog progressBarDialog;
     private Boolean isConnectionOk = false;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,15 +53,28 @@ public class MainActivity extends AppCompatActivity {
         Board c = new Board("","없없",null);
         Board d = new Board("","질문?",null);
 
+        Reply g = new Reply("내용","유저아이디");
+        ArrayList<Reply> replies = new ArrayList<>();
+        replies.add(g);
+        replies.add(g);
+        replies.add(g);
+        replies.add(g);
+
+
+
+        Answer answer = new Answer("","이건답변입니다","","","","","","","");
+        answer.setRepliesList(replies);
+
+        Board b2 = new Board("","답변이 달려있음",answer);
+
+
         boards.add(b);
+        boards.add(b2);
         boards.add(c);
         boards.add(d);
 
-        //Board b2 = new Board("","답변이 달려있음",new Answer("","이건답변입니다","","","","","","",""));
-        //boards.add(b2);
-
         User user = new User(1,"email","name", User.PHARM,"a",boards);
-        boardAdapter = new BoardAdapter(this,user.getUser_type(),user.getUserBoardList());
+        boardAdapter = new BoardAdapter(this,user,user.getUserBoardList());
 
 
         boardListView = (ListView) findViewById(R.id.lv_board);

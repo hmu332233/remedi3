@@ -10,7 +10,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import kr.co.jbnu.remedi.R;
-import kr.co.jbnu.remedi.models.Board;
 import kr.co.jbnu.remedi.models.Medicine;
 
 /**

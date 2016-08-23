@@ -21,6 +21,13 @@ public class Reply implements Serializable {
         this.updated_at = updated_at;
     }
 
+    public Reply( String content, String userId) {
+
+        this.content = content;
+        UserId = userId;
+
+    }
+
     public int getId() {
         return id;
     }
