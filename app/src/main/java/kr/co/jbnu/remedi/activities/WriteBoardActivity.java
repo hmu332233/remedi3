@@ -1,7 +1,9 @@
 package kr.co.jbnu.remedi.activities;
 
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -10,11 +12,19 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.File;
+
 import kr.co.jbnu.remedi.R;
 import kr.co.jbnu.remedi.Utils.ProgressBarDialog;
 import kr.co.jbnu.remedi.models.User;
+import kr.co.jbnu.remedi.serverIDO.ImageServerConnectionManager;
+import kr.co.jbnu.remedi.serverIDO.ImageServerConnectionService;
 import kr.co.jbnu.remedi.serverIDO.ServerConnectionManager;
 import kr.co.jbnu.remedi.serverIDO.ServerConnectionService;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -28,6 +38,7 @@ public class WriteBoardActivity extends AppCompatActivity {
     Button btn_ok;
     private ProgressBarDialog progressBarDialog;
     private Boolean isConnectionOk = false;
+    private Uri imageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,10 +46,11 @@ public class WriteBoardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_write_board);
 
 
-        Uri imageUri = getIntent().getData();
+        imageUri = getIntent().getData();
 
         ImageView iv_medicine_image = (ImageView)findViewById(R.id.iv_medicine_image);
         iv_medicine_image.setImageURI(imageUri);
+        System.out.println(imageUri.toString());
 
 
         et_question = (EditText)findViewById(R.id.et_question_content);
@@ -81,6 +93,7 @@ public class WriteBoardActivity extends AppCompatActivity {
                 if(isConnectionOk==true){
                     progressBarDialog.dismiss();
                     Toast.makeText(getApplicationContext(), "게시물 등록 완료", Toast.LENGTH_SHORT).show();
+                    uploadFile(imageUri);
                 }else{
                     progressBarDialog.dismiss();
                     Toast.makeText(getApplicationContext(), "게시물 등록 오류", Toast.LENGTH_SHORT).show();
@@ -95,6 +108,62 @@ public class WriteBoardActivity extends AppCompatActivity {
                 Log.w("서버 통신 실패",t.getMessage());
             }
         });
+    }
+
+    private void uploadFile(Uri fileUri) {
+        // create upload service client
+
+        ImageServerConnectionManager serverConnectionManager = ImageServerConnectionManager.getInstance();
+        ImageServerConnectionService service = serverConnectionManager.getServerConnection();
+
+
+        // https://github.com/iPaulPro/aFileChooser/blob/master/aFileChooser/src/com/ipaulpro/afilechooser/utils/FileUtils.java
+        // use the FileUtils to get the actual file by uri
+        System.out.println("여긴데 : "+fileUri.getPath());
+        File file = new File(getRealPathFromURI(fileUri));
+
+        // create RequestBody instance from file
+        RequestBody requestFile =
+                RequestBody.create(MediaType.parse("multipart/form-data"), file);
+
+        // MultipartBody.Part is used to send also the actual file name
+        MultipartBody.Part body =
+                MultipartBody.Part.createFormData("picture", file.getName(), requestFile);
+
+        // add another part within the multipart request
+        String descriptionString = file.getName();
+        RequestBody description =
+                RequestBody.create(
+                        MediaType.parse("multipart/form-data"), descriptionString);
+
+        // finally, execute the request
+        Call<ResponseBody> call = service.upload(description, body);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call,
+                                   Response<ResponseBody> response) {
+                Log.v("Upload", "success");
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("Upload error:", t.getMessage());
+            }
+        });
+    }
+
+    private String getRealPathFromURI(Uri contentURI) {
+        String result;
+        Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) { // Source is Dropbox or other similar local file path
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
+        }
+        return result;
     }
 
 
