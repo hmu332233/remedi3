@@ -1,6 +1,8 @@
 package kr.co.jbnu.remedi.activities;
 
+import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -47,11 +49,15 @@ public class WriteBoardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_write_board);
 
+        Intent intent = getIntent();
 
         imageUri = getIntent().getData();
+        Bitmap bitmap = (Bitmap) getIntent().getExtras().get("data");
 
         ImageView iv_medicine_image = (ImageView)findViewById(R.id.iv_medicine_image);
-        iv_medicine_image.setImageURI(imageUri);
+
+       // iv_medicine_image.setImageURI(imageUri);
+        iv_medicine_image.setImageBitmap(bitmap);
         System.out.println(imageUri.toString());
 
 
@@ -172,5 +178,34 @@ public class WriteBoardActivity extends AppCompatActivity {
         return result;
     }
 
+
+    public Bitmap resizeBitmapImageFn(
+            Bitmap bmpSource, int maxResolution){
+        int iWidth = bmpSource.getWidth();      //비트맵이미지의 넓이
+        int iHeight = bmpSource.getHeight();     //비트맵이미지의 높이
+        int newWidth = iWidth ;
+        int newHeight = iHeight ;
+        float rate = 0.0f;
+
+        Log.d("알림",iWidth+"");
+        Log.d("알림",iHeight+"");
+        //이미지의 가로 세로 비율에 맞게 조절
+        if(iWidth > iHeight ){
+            if(maxResolution < iWidth ){
+                rate = maxResolution / (float) iWidth ;
+                newHeight = (int) (iHeight * rate);
+                newWidth = maxResolution;
+            }
+        }else{
+            if(maxResolution < iHeight ){
+                rate = maxResolution / (float) iHeight ;
+                newWidth = (int) (iWidth * rate);
+                newHeight = maxResolution;
+            }
+        }
+
+        return Bitmap.createScaledBitmap(
+                bmpSource, newWidth, newHeight, true);
+    }
 
 }

@@ -25,7 +25,8 @@
         android:layout_weight="7"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="horizontal">
 
         <info.hoang8f.widget.FButton
             android:id="@+id/btn_ok"
@@ -33,6 +34,23 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="확인"
+
+            android:textColor="#ffffff"
+            fbutton:buttonColor="@color/titlebar"
+            fbutton:shadowColor="#5014a1"
+            fbutton:shadowEnabled="true"
+            fbutton:shadowHeight="2dp"
+            fbutton:cornerRadius="8dp"
+
+            />
+
+        <info.hoang8f.widget.FButton
+            android:id="@+id/btn_cancel"
+            android:layout_gravity="center"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="취소"
+            android:layout_marginLeft="50dp"
 
             android:textColor="#ffffff"
             fbutton:buttonColor="@color/titlebar"

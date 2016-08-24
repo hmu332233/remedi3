@@ -1,6 +1,7 @@
 package kr.co.jbnu.remedi.activities;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -135,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
                     Intent intent = new Intent(this,WriteBoardActivity.class);
                     intent.setData(imageURI);
+                    intent.putExtra("data",(Bitmap)data.getExtras().get("data"));
                     startActivityForResult(intent,321);
                 }
             }
@@ -155,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(this,WriteBoardActivity.class);
                 intent.setData(imageURI);
+                intent.putExtra("data",(Bitmap)data.getExtras().get("data"));
                 startActivityForResult(intent,321);
             }
 
@@ -266,4 +269,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }

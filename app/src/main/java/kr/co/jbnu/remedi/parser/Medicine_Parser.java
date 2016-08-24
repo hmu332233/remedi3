@@ -80,9 +80,12 @@ public class Medicine_Parser {
 		Elements detailDatas = detailInfo.select("tbody div");
 		
 		String[] detailData = {
-				detailDatas.get(0).text().split("효능효과 ")[1],//효능효과
-				detailDatas.get(1).text().split("용법용량 ")[1],//용법용량
-				detailDatas.get(2).text().split("주의사항 ")[1]//사용상의 주의사항
+			//	detailDatas.get(0).text().split("효능효과 ")[1],//효능효과
+			//	detailDatas.get(1).text().split("용법용량 ")[1],//용법용량
+			//	detailDatas.get(2).text().split("주의사항 ")[1]//사용상의 주의사항
+				detailDatas.get(0).text(),
+				"",
+				""
 		};
 		/*
 		for( String t : detailData)
