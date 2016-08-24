@@ -3,6 +3,7 @@ package kr.co.jbnu.remedi.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -15,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -49,6 +52,7 @@ public class BoardAdapter extends ArrayAdapter<Board> {
 
         final LayoutInflater inflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View item = null;
+
 
         if( user_type == User.NORMAL || board.getAnswer() != null )
         {
@@ -227,6 +231,10 @@ public class BoardAdapter extends ArrayAdapter<Board> {
 
 
         }
+
+        ImageView iv_medicine_image = (ImageView) item.findViewById(R.id.iv_medicine_image);
+        Picasso.with(context).load(Uri.parse(board.getImg_url())).error(R.drawable.ic_nocover).into(iv_medicine_image);
+        //Picasso.with(context).load(Uri.parse("http://kossi.iptime.org:2000/viate/getimg?imgname=201673121588983607mu.jpg")).error(R.drawable.ic_nocover).into(iv_medicine_image);
 
         return item;
     }

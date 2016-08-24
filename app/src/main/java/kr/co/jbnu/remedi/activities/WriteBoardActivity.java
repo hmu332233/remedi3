@@ -3,6 +3,7 @@ package kr.co.jbnu.remedi.activities;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -15,10 +16,12 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileOutputStream;
 
 import kr.co.jbnu.remedi.R;
 import kr.co.jbnu.remedi.Utils.MakeFileName;
 import kr.co.jbnu.remedi.Utils.ProgressBarDialog;
+import kr.co.jbnu.remedi.models.Board;
 import kr.co.jbnu.remedi.models.User;
 import kr.co.jbnu.remedi.serverIDO.ImageServerConnectionManager;
 import kr.co.jbnu.remedi.serverIDO.ImageServerConnectionService;
@@ -56,12 +59,20 @@ public class WriteBoardActivity extends AppCompatActivity {
 
         ImageView iv_medicine_image = (ImageView)findViewById(R.id.iv_medicine_image);
 
-       // iv_medicine_image.setImageURI(imageUri);
+
+
+
+        File file = saveBitmap(bitmap);
+       // bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+        deleteBitmap();
+
+        // iv_medicine_image.setImageURI(imageUri);
         iv_medicine_image.setImageBitmap(bitmap);
         System.out.println(imageUri.toString());
 
 
-        et_question = (EditText)findViewById(R.id.et_question_content);
+
+                et_question = (EditText)findViewById(R.id.et_question_content);
         btn_ok = (Button)findViewById(R.id.btn_ok);
 
         btn_ok.setOnClickListener(new View.OnClickListener() {
@@ -70,12 +81,14 @@ public class WriteBoardActivity extends AppCompatActivity {
                 progressBarDialog = new ProgressBarDialog(WriteBoardActivity.this);
                 progressBarDialog.show();
                 uploadFile(imageUri);
-                //Board board = new Board("",et_question.getText().toString(),null);
+                /*
+                Board board = new Board("",et_question.getText().toString(),null);
 
-                //Intent intent = new Intent();
-                //intent.putExtra("board",board);
-                //setResult(RESULT_OK,intent);
-                //finish();
+                Intent intent = new Intent();
+                intent.putExtra("board",board);
+                setResult(RESULT_OK,intent);
+                finish();
+                */
             }
         });
     }
@@ -206,6 +219,42 @@ public class WriteBoardActivity extends AppCompatActivity {
 
         return Bitmap.createScaledBitmap(
                 bmpSource, newWidth, newHeight, true);
+    }
+
+    private File saveBitmap(Bitmap bitmap)
+    {
+        try{
+
+            File file = new File("data/data/kr.co.jbnu.remedi/files/test.png");
+            FileOutputStream fos = openFileOutput("test.png" , 0);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100 , fos);
+            fos.flush();
+            fos.close();
+
+            Toast.makeText(this, "file ok", Toast.LENGTH_SHORT).show();
+
+            return file;
+        }catch(Exception e) { Toast.makeText(this, "file error", Toast.LENGTH_SHORT).show();}
+
+       return null;
+    }
+
+
+    private void deleteBitmap()
+    {
+        try{
+            File file = new File("data/data/kr.co.jbnu.remedi/files/");
+            File[] flist = file.listFiles();
+            Toast.makeText(getApplicationContext(), "imgcnt = " + flist.length, Toast.LENGTH_SHORT).show();
+            for(int i = 0 ; i < flist.length ; i++)
+            {
+                String fname = flist[i].getName();
+                if(fname.equals("test.png"))
+                {
+                    flist[i].delete();
+                }
+            }
+        }catch(Exception e){Toast.makeText(getApplicationContext(), "파일 삭제 실패 ", Toast.LENGTH_SHORT).show();}
     }
 
 }

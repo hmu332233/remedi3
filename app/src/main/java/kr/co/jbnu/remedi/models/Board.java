@@ -28,7 +28,7 @@ public class Board implements Serializable{
     }
 
     public String getImg_url() {
-        return img_url;
+        return "http://kossi.iptime.org:2000/viate/getimg?imgname="+img_url;
     }
 
     public void setImg_url(String img_url) {
