@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import kr.co.jbnu.remedi.R;
@@ -50,6 +51,11 @@ public class MainActivity extends AppCompatActivity {
         //asdfasd
         //asdfasdf
         boards = User.getInstance().getUserBoardList();
+        if(boards == null)
+        {
+            User.getInstance().setUserBoardList(new ArrayList<Board>());
+            boards = User.getInstance().getUserBoardList();
+        }
 
 
 
@@ -116,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(this,WriteBoardActivity.class);
                     intent.setData(imageURI);
                     intent.putExtra("data",(Bitmap)data.getExtras().get("data"));
+                    intent.putExtra("type","camera");
                     startActivityForResult(intent,321);
                 }
             }
@@ -136,7 +143,8 @@ public class MainActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(this,WriteBoardActivity.class);
                 intent.setData(imageURI);
-                intent.putExtra("data",(Bitmap)data.getExtras().get("data"));
+                intent.putExtra("type","gallery");
+
                 startActivityForResult(intent,321);
             }
 

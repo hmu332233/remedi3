@@ -87,9 +87,14 @@ public class BoardAdapter extends ArrayAdapter<Board> {
                 tv_answer.setVisibility(View.VISIBLE);
                 tv_answer.setText(board.getAnswer().getAnswer_content());
 
+                LinearLayout layout_answer = (LinearLayout) item.findViewById(R.id.layout_answer);
+                layout_answer.setVisibility(View.VISIBLE);
+
                 LinearLayout layout_no_answer = (LinearLayout) item.findViewById(R.id.layout_no_answer);
                 layout_no_answer.setVisibility(View.GONE);
 
+                TextView tv_pharm_name = (TextView) item.findViewById(R.id.tv_pharm_name);
+                //tv_pharm_name.setText();
 
                 Answer answer = board.getAnswer();
 
