@@ -25,6 +25,7 @@ import java.io.IOException;
 import kr.co.jbnu.remedi.R;
 import kr.co.jbnu.remedi.Utils.ProgressBarDialog;
 import kr.co.jbnu.remedi.gcm.PreferenceUtil;
+import kr.co.jbnu.remedi.models.User;
 import kr.co.jbnu.remedi.serverIDO.ServerConnectionManager;
 import kr.co.jbnu.remedi.serverIDO.ServerConnectionService;
 import retrofit2.Call;
@@ -54,6 +55,10 @@ public class Join_Activity extends AppCompatActivity {
 
     private GoogleCloudMessaging _gcm;
     private String registration_id = null;
+
+    private String email;
+    private String pw;
+    private String name;
 
 
 
@@ -155,9 +160,9 @@ public class Join_Activity extends AppCompatActivity {
         ServerConnectionManager serverConnectionManager = ServerConnectionManager.getInstance();
         ServerConnectionService serverConnectionService = serverConnectionManager.getServerConnection();
 
-        String email = email_input.getText().toString();
-        String pw = password_input.getText().toString();
-        String name = name_input.getText().toString();
+        email =email_input.getText().toString();
+        pw = password_input.getText().toString();
+        name = name_input.getText().toString();
         System.out.println(registration_id+"id 확인");
         Call<Void> user_join =  serverConnectionService.user_join(email,pw,name,type,registration_id);
 
@@ -166,10 +171,13 @@ public class Join_Activity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                //is_exist = response.body();
+                User  user = new User(email,name,type);
+                User.setUser(user);
                 System.out.println("존재 하는 값 ");
                 progressBarDialog.dismiss();
                 Toast.makeText(context, "회원가입 완료", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(Join_Activity.this, MainActivity.class);
+                startActivity(intent);
             }
             @Override
             public void onFailure(Call<Void> call, Throwable t) {

@@ -19,10 +19,14 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import org.apache.http.util.TextUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import kr.co.jbnu.remedi.R;
 import kr.co.jbnu.remedi.Utils.ProgressBarDialog;
 import kr.co.jbnu.remedi.gcm.PreferenceUtil;
+import kr.co.jbnu.remedi.models.Answer;
+import kr.co.jbnu.remedi.models.Board;
+import kr.co.jbnu.remedi.models.Reply;
 import kr.co.jbnu.remedi.models.User;
 import kr.co.jbnu.remedi.serverIDO.ServerConnectionManager;
 import kr.co.jbnu.remedi.serverIDO.ServerConnectionService;
@@ -88,6 +92,7 @@ public class Login_Activity extends AppCompatActivity {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 User user = response.body();
+                User.setUser(user);
 
                 if(user==null) {
                     Toast.makeText(getApplicationContext(), "아이디 혹은 패스워드 오류", Toast.LENGTH_SHORT).show();
@@ -95,7 +100,7 @@ public class Login_Activity extends AppCompatActivity {
                 }
                 else{
                     Toast.makeText(getApplicationContext(), "로그인 성공"+user.getEmail(), Toast.LENGTH_SHORT).show();
-                    User.setUser(user);
+
 
                     if(user.getRegister_id()==null){ // 웹에서 회원가입을 한경우
                             if(getRegistrationId()!=null) { // 현재 레지스트레이션 아이디가 존재한다면 서버에 저장한다.
@@ -111,10 +116,16 @@ public class Login_Activity extends AppCompatActivity {
                                     registration_id = getRegistrationId();
                                     updateRegisterId();
                                 }else{// 기존 사용자임으로 그냥 진행하면 된다.
-                                    progressBarDialog.dismiss();
+
+                                    if(User.getInstance().getUser_type().equals("normal")) get_normaluser_boardlist();
+                                    else get_pharmacist_boardlist();
+
+
                                 }
                             }else{ //웹에서 가져온 레지스트 레이션을 preferecne에 저장하고 진행한다.
                                 storeRegistrationId(User.getInstance().getRegister_id());
+                                if(User.getInstance().getUser_type().equals("normal")) get_normaluser_boardlist();
+                                else get_pharmacist_boardlist();
                             }
                     }
                 }
@@ -148,7 +159,8 @@ public class Login_Activity extends AppCompatActivity {
                 //is_exist = response.body();
                 System.out.println("존재 하는 값 ");
                 Toast.makeText(getApplicationContext(), "register업데이트 완료", Toast.LENGTH_SHORT).show();
-                progressBarDialog.dismiss();
+                if(User.getInstance().getUser_type().equals("normal")) get_normaluser_boardlist();
+                else get_pharmacist_boardlist();
             }
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
@@ -297,6 +309,94 @@ public class Login_Activity extends AppCompatActivity {
 
         PreferenceUtil.instance(getApplicationContext()).putRedId(regId);
         PreferenceUtil.instance(getApplicationContext()).putAppVersion(appVersion);
+    }
+
+    private void get_normaluser_boardlist(){
+        System.out.println("일반 유저 보드 데이터 요청");
+
+        ServerConnectionManager serverConnectionManager = ServerConnectionManager.getInstance();
+        ServerConnectionService serverConnectionService = serverConnectionManager.getServerConnection();
+
+
+
+        final Call<ArrayList<Board>> board = serverConnectionService.get_normaluser_board(User.getInstance().getEmail());
+        board.enqueue(new Callback<ArrayList<Board>>() {
+
+            @Override
+            public void onResponse(Call<ArrayList<Board>> call, Response<ArrayList<Board>> response) {
+
+                ArrayList<Board> boardlist = response.body();
+                User.getInstance().setUserBoardList(boardlist);
+                progressBarDialog.dismiss();
+                for(int i=0;i<boardlist.size();i++){
+                    System.out.println("board 아이디 : "+boardlist.get(i).getId());
+                    if(boardlist.get(i).getAnswer()!=null){
+                        Answer answer = boardlist.get(i).getAnswer();
+                        System.out.println("답글 내용"+answer.getMedi_name()+answer.getMedi_company()+answer.getMedi_effect());
+                        ArrayList<Reply> replies = answer.getRepliesList();
+                        if(replies!=null){
+                            for(int j=0;j<replies.size();j++)
+                                System.out.println("댓글 내용 : "+replies.get(j).getContent());
+                        }
+                    }
+                }
+                Intent intent = new Intent(Login_Activity.this, MainActivity.class);
+                startActivity(intent);
+
+            }
+            @Override
+            public void onFailure(Call<ArrayList<Board>> call, Throwable t) {
+                //final TextView textView = (TextView) findViewById(R.id.textView);
+                //textView.setText("Something went wrong: " + t.getMessage());
+                //progressBarDialog.dismiss();
+                Log.w("서버 통신 실패",t.getMessage());
+            }
+        });
+    }
+
+    private void get_pharmacist_boardlist(){
+        System.out.println("약사 보드 데이터 요청");
+
+        ServerConnectionManager serverConnectionManager = ServerConnectionManager.getInstance();
+        ServerConnectionService serverConnectionService = serverConnectionManager.getServerConnection();
+
+        final Call<ArrayList<Board>> board = serverConnectionService.get_pharmacist_normalboard(User.getInstance().getEmail());
+        board.enqueue(new Callback<ArrayList<Board>>() {
+
+            @Override
+            public void onResponse(Call<ArrayList<Board>> call, Response<ArrayList<Board>> response) {
+
+                ArrayList<Board> boardlist = response.body();
+                User.getInstance().setUserBoardList(boardlist);
+                progressBarDialog.dismiss();
+
+                if(boardlist!=null){
+                    for(int i=0;i<boardlist.size();i++){
+                        System.out.println("board 아이디 : "+boardlist.get(i).getId());
+                        if(boardlist.get(i).getAnswer()!=null){
+                            Answer answer = boardlist.get(i).getAnswer();
+                            System.out.println("답글 내용"+answer.getMedi_name()+answer.getMedi_company()+answer.getMedi_effect());
+                            ArrayList<Reply> replies = answer.getRepliesList();
+                            if(replies!=null){
+                                for(int j=0;j<replies.size();j++)
+                                    System.out.println("댓글 내용 : "+replies.get(j).getContent());
+                            }
+                        }
+                    }
+                }
+
+                Intent intent = new Intent(Login_Activity.this, MainActivity.class);
+                startActivity(intent);
+
+            }
+            @Override
+            public void onFailure(Call<ArrayList<Board>> call, Throwable t) {
+                //final TextView textView = (TextView) findViewById(R.id.textView);
+                //textView.setText("Something went wrong: " + t.getMessage());
+                //progressBarDialog.dismiss();
+                Log.w("서버 통신 실패",t.getMessage());
+            }
+        });
     }
 
 

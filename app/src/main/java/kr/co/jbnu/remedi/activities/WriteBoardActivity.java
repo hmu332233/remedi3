@@ -3,7 +3,6 @@ package kr.co.jbnu.remedi.activities;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -46,6 +45,7 @@ public class WriteBoardActivity extends AppCompatActivity {
     private Boolean isConnectionOk = false;
     private Uri imageUri;
     private String imagefilename = null;
+    private File imagefile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,21 +58,19 @@ public class WriteBoardActivity extends AppCompatActivity {
         Bitmap bitmap = (Bitmap) getIntent().getExtras().get("data");
 
         ImageView iv_medicine_image = (ImageView)findViewById(R.id.iv_medicine_image);
-
-
-
-
-        File file = saveBitmap(bitmap);
-       // bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-        deleteBitmap();
-
-        // iv_medicine_image.setImageURI(imageUri);
-        iv_medicine_image.setImageBitmap(bitmap);
+        iv_medicine_image.setImageURI(imageUri);
         System.out.println(imageUri.toString());
 
 
+        imagefile = saveBitmap(bitmap);
+        // bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
 
-                et_question = (EditText)findViewById(R.id.et_question_content);
+        // iv_medicine_image.setImageURI(imageUri);
+        iv_medicine_image.setImageBitmap(bitmap);
+
+
+
+        et_question = (EditText)findViewById(R.id.et_question_content);
         btn_ok = (Button)findViewById(R.id.btn_ok);
 
         btn_ok.setOnClickListener(new View.OnClickListener() {
@@ -81,14 +79,12 @@ public class WriteBoardActivity extends AppCompatActivity {
                 progressBarDialog = new ProgressBarDialog(WriteBoardActivity.this);
                 progressBarDialog.show();
                 uploadFile(imageUri);
-                /*
-                Board board = new Board("",et_question.getText().toString(),null);
+                //Board board = new Board("",et_question.getText().toString(),null);
 
-                Intent intent = new Intent();
-                intent.putExtra("board",board);
-                setResult(RESULT_OK,intent);
-                finish();
-                */
+                //Intent intent = new Intent();
+                //intent.putExtra("board",board);
+                //setResult(RESULT_OK,intent);
+                //finish();
             }
         });
     }
@@ -100,8 +96,7 @@ public class WriteBoardActivity extends AppCompatActivity {
         ServerConnectionService serverConnectionService = serverConnectionManager.getServerConnection();
 
         //user 임시 세팅
-        User user = new User("rupitere@naver.com","고석현","normal");
-        User.setUser(user);
+        User user = User.getInstance();
 
         
 
@@ -116,6 +111,12 @@ public class WriteBoardActivity extends AppCompatActivity {
                 if(isConnectionOk==true){
                     progressBarDialog.dismiss();
                     Toast.makeText(getApplicationContext(), "게시물 등록 완료", Toast.LENGTH_SHORT).show();
+                    Board board = new Board(imagefilename,et_question.getText().toString(),null);
+
+                    Intent intent = new Intent();
+                    intent.putExtra("board",board);
+                    setResult(RESULT_OK,intent);
+                    finish();
                 }else{
                     progressBarDialog.dismiss();
                     Toast.makeText(getApplicationContext(), "게시물 등록 오류", Toast.LENGTH_SHORT).show();
@@ -141,7 +142,7 @@ public class WriteBoardActivity extends AppCompatActivity {
 
         // https://github.com/iPaulPro/aFileChooser/blob/master/aFileChooser/src/com/ipaulpro/afilechooser/utils/FileUtils.java
         // use the FileUtils to get the actual file by uri
-        File file = new File(getRealPathFromURI(fileUri));
+        File file = imagefile;
 
         // create RequestBody instance from file
         RequestBody requestFile =
@@ -167,12 +168,14 @@ public class WriteBoardActivity extends AppCompatActivity {
             public void onResponse(Call<ResponseBody> call,
                                    Response<ResponseBody> response) {
                 Log.v("Upload", "success");
+                deleteBitmap();
                 register_board();
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Log.e("Upload error:", t.getMessage());
+                deleteBitmap();
             }
         });
     }
@@ -190,7 +193,6 @@ public class WriteBoardActivity extends AppCompatActivity {
         }
         return result;
     }
-
 
     public Bitmap resizeBitmapImageFn(
             Bitmap bmpSource, int maxResolution){
@@ -236,7 +238,7 @@ public class WriteBoardActivity extends AppCompatActivity {
             return file;
         }catch(Exception e) { Toast.makeText(this, "file error", Toast.LENGTH_SHORT).show();}
 
-       return null;
+        return null;
     }
 
 

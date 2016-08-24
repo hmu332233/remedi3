@@ -24,11 +24,13 @@
             android:gravity="center">
 
             <ImageView
+                android:id="@+id/intro_no_Join_btn"
                 android:layout_width="325dp"
                 android:layout_height="70dp"
                 android:src="@mipmap/login_guestlogin_btn"/>
 
             <ImageView
+                android:id="@+id/intro_join_btn"
                 android:layout_marginTop="10dp"
                 android:layout_width="325dp"
                 android:layout_height="70dp"
@@ -42,6 +44,7 @@
             android:layout_height="match_parent"
             android:gravity="center">
             <ImageView
+                android:id="@+id/intro_already_btn"
                 android:layout_width="207dp"
                 android:layout_height="22dp"
                 android:src="@mipmap/login_alreadysign_btn"/>

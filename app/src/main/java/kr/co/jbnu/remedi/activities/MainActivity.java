@@ -49,37 +49,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         //asdfasd
         //asdfasdf
-        boards = new ArrayList<>();
-        Board b = new Board("","답변없는질문",null);
-        Board c = new Board("","없없",null);
-        Board d = new Board("","질문?",null);
-
-        Reply g = new Reply("내용","유저아이디");
-        ArrayList<Reply> replies = new ArrayList<>();
-        replies.add(g);
-        replies.add(g);
-        replies.add(g);
-        replies.add(g);
+        boards = User.getInstance().getUserBoardList();
 
 
 
-        Answer answer = new Answer("","이건답변입니다","","","","","","","");
-        answer.setRepliesList(replies);
 
-        Board b2 = new Board("","답변이 달려있음",answer);
-
-
-        boards.add(b);
-        boards.add(b2);
-        boards.add(c);
-        boards.add(d);
-
-        User user = new User(1,"email","name", User.PHARM,"a",boards);
-        boardAdapter = new BoardAdapter(this,user,user.getUserBoardList());
-
-
+        boardAdapter = new BoardAdapter(this,User.getInstance(),User.getInstance().getUserBoardList());
         boardListView = (ListView) findViewById(R.id.lv_board);
         boardListView.setAdapter(boardAdapter);
+
+
 
         com.github.clans.fab.FloatingActionButton btn_pick_gallery = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.btn_pick_gallery);
         btn_pick_gallery.setOnClickListener(new View.OnClickListener() {
@@ -193,17 +172,13 @@ public class MainActivity extends AppCompatActivity {
 
                 progressBarDialog = new ProgressBarDialog(MainActivity.this);
                 progressBarDialog.show();
-                //user 임시 세팅
-                User user = new User("rupitere@naver.com","고석현","normal");
-                User.setUser(user);
 
 
 
                 Answer answer = new Answer(medicine.getName(),et_answer.getText().toString(),medicine.getShape(),
                         medicine.getEnterprise(),medicine.getStandardCode(),medicine.getCategory(),medicine.getEffect(),"","");
                 System.out.println("medi category 확인 : "+answer.getMedi_category());
-                //board id 임시 세팅
-                board.setId(4);
+
                 board.setAnswer(answer);
 
                 boards.set(index,board);
@@ -265,6 +240,47 @@ public class MainActivity extends AppCompatActivity {
                 //final TextView textView = (TextView) findViewById(R.id.textView);
                 //textView.setText("Something went wrong: " + t.getMessage());
                 progressBarDialog.dismiss();
+                Log.w("서버 통신 실패",t.getMessage());
+            }
+        });
+    }
+
+    private void get_normaluser_boardlist(){
+        System.out.println("보드 데이터 요청");
+
+        ServerConnectionManager serverConnectionManager = ServerConnectionManager.getInstance();
+        ServerConnectionService serverConnectionService = serverConnectionManager.getServerConnection();
+
+        //user 임시 세팅
+        User user = new User("rupitere@naver.com","고석현","normal");
+        User.setUser(user);
+
+        final Call<ArrayList<Board>> board = serverConnectionService.get_normaluser_board(User.getInstance().getEmail());
+        board.enqueue(new Callback<ArrayList<Board>>() {
+
+            @Override
+            public void onResponse(Call<ArrayList<Board>> call, Response<ArrayList<Board>> response) {
+
+                ArrayList<Board> boardlist = response.body();
+                for(int i=0;i<boardlist.size();i++){
+                    System.out.println("board 아이디 : "+boardlist.get(i).getId());
+                    if(boardlist.get(i).getAnswer()!=null){
+                        Answer answer = boardlist.get(i).getAnswer();
+                        System.out.println("답글 내용"+answer.getMedi_name()+answer.getMedi_company()+answer.getMedi_effect());
+                        ArrayList<Reply> replies = answer.getRepliesList();
+                        if(replies!=null){
+                            for(int j=0;j<replies.size();j++)
+                                System.out.println("댓글 내용 : "+replies.get(j).getContent());
+                        }
+                    }
+                }
+
+            }
+            @Override
+            public void onFailure(Call<ArrayList<Board>> call, Throwable t) {
+                //final TextView textView = (TextView) findViewById(R.id.textView);
+                //textView.setText("Something went wrong: " + t.getMessage());
+                //progressBarDialog.dismiss();
                 Log.w("서버 통신 실패",t.getMessage());
             }
         });

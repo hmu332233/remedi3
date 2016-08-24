@@ -12,7 +12,7 @@ import retrofit2.http.POST;
 /**
  * Created by seokhyeon on 2016-08-15.
  */
-public interface ServerConnectionService {
+public interface ServerConnectionService2 {
     @FormUrlEncoded
     @POST("/mobile/login_request")
     Call<User> login_request(@Field("email") String ID, @Field("pw") String PW);
@@ -27,17 +27,17 @@ public interface ServerConnectionService {
 
     @FormUrlEncoded
     @POST("/mobile/update_gcm_register_id")
-    Call<Void> update_gcm_register_id(@Field("email") String email,@Field("reg_id") String reg_id);
+    Call<Void> update_gcm_register_id(@Field("email") String email, @Field("reg_id") String reg_id);
 
     @FormUrlEncoded
     @POST("/mobile/register_board")
-    Call<Boolean> register_board(@Field("email") String email,@Field("img_name") String img_name, @Field("content") String content);
+    Call<Boolean> register_board(@Field("email") String email, @Field("img_name") String img_name, @Field("content") String content);
 
     @FormUrlEncoded
     @POST("/mobile/register_answer")
-    Call<Boolean> register_answer(@Field("board_id") int board_id,@Field("medi_name") String medi_name,@Field("answer_content") String answer_content,
-                                  @Field("medi_element") String medi_element,@Field("medi_company") String medi_company,@Field("medi_serialnumber") String medi_serialnumber,
-                                  @Field("medi_category") String medi_category,@Field("medi_effect") String medi_effect,@Field("pharm_email") String pharm_email);
+    Call<Boolean> register_answer(@Field("board_id") int board_id, @Field("medi_name") String medi_name, @Field("answer_content") String answer_content,
+                                  @Field("medi_element") String medi_element, @Field("medi_company") String medi_company, @Field("medi_serialnumber") String medi_serialnumber,
+                                  @Field("medi_category") String medi_category, @Field("medi_effect") String medi_effect, @Field("pharm_email") String pharm_email);
 
 
     @FormUrlEncoded
@@ -46,13 +46,13 @@ public interface ServerConnectionService {
 
     @FormUrlEncoded
     @POST("/mobile/register_reply")
-    Call<Boolean> register_reply(@Field("content") String content,@Field("email") String email,@Field("answer_id") int answer_id);
+    Call<Boolean> register_reply(@Field("content") String content, @Field("email") String email, @Field("answer_id") int answer_id);
 
 
 
     @FormUrlEncoded
-    @POST("/mobile/get_pharmacist_board")
-    Call<ArrayList<Board>> get_pharmacist_normalboard(@Field("email") String email);
+    @POST("/mobile/get_pharmacist_normalboard")
+    Call<ArrayList<Board>> get_pharmacist_normalboard();
 
     @FormUrlEncoded
     @POST("/mobile/get_pharmacist_writtenboard")
