@@ -23,6 +23,7 @@ import java.util.ArrayList;
 
 import kr.co.jbnu.remedi.R;
 import kr.co.jbnu.remedi.Utils.GlobalValue;
+import kr.co.jbnu.remedi.Utils.ImageDialog;
 import kr.co.jbnu.remedi.activities.MedicineSearchActivity;
 import kr.co.jbnu.remedi.models.Answer;
 import kr.co.jbnu.remedi.models.Board;
@@ -240,6 +241,15 @@ public class BoardAdapter extends ArrayAdapter<Board> {
         System.out.println(board.getImg_url());
         ImageView iv_medicine_image = (ImageView) item.findViewById(R.id.iv_medicine_image);
         Picasso.with(context).load(Uri.parse(board.getImg_url())).error(R.drawable.ic_nocover).into(iv_medicine_image);
+        iv_medicine_image.setScaleType(ImageView.ScaleType.FIT_XY);
+        iv_medicine_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ImageDialog imgdial = new ImageDialog(context,board.getImg_url());
+                imgdial.show();
+            }
+        });
+
         //Picasso.with(context).load(Uri.parse("http://kossi.iptime.org:2000/viate/getimg?imgname=1164417882042743Screenshot_2016-08-24-04-42-19.png")).error(R.drawable.ic_nocover).into(iv_medicine_image);
 
         return item;

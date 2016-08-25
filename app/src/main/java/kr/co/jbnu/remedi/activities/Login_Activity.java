@@ -342,7 +342,7 @@ public class Login_Activity extends AppCompatActivity {
                 }
                 Intent intent = new Intent(Login_Activity.this, MainActivity.class);
                 startActivity(intent);
-
+                finish();
             }
             @Override
             public void onFailure(Call<ArrayList<Board>> call, Throwable t) {
@@ -387,6 +387,7 @@ public class Login_Activity extends AppCompatActivity {
 
                 Intent intent = new Intent(Login_Activity.this, MainActivity.class);
                 startActivity(intent);
+                finish();
 
             }
             @Override

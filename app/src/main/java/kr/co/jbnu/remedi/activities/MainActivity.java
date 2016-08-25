@@ -1,7 +1,9 @@
 package kr.co.jbnu.remedi.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -14,7 +16,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import kr.co.jbnu.remedi.R;
@@ -65,22 +67,37 @@ public class MainActivity extends AppCompatActivity {
         boardListView.setAdapter(boardAdapter);
 
 
+        if(User.getInstance().getUser_type().equals("normal")){
+            com.github.clans.fab.FloatingActionButton btn_pick_gallery = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.btn_pick_gallery);
+            btn_pick_gallery.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getImageFromGallery();
+                }
+            });
 
-        com.github.clans.fab.FloatingActionButton btn_pick_gallery = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.btn_pick_gallery);
-        btn_pick_gallery.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getImageFromGallery();
-            }
-        });
+            com.github.clans.fab.FloatingActionButton btn_take_picture = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.btn_take_picture);
+            btn_take_picture.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getTakeCamera();
+                }
+            });
+        }else{
+            com.github.clans.fab.FloatingActionButton btn_pick_gallery = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.btn_pick_gallery);
+            btn_pick_gallery.setImageResource(R.drawable.checked1);
+            btn_pick_gallery.setLabelText("답글 리스트 확인");
 
-        com.github.clans.fab.FloatingActionButton btn_take_picture = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.btn_take_picture);
-        btn_take_picture.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getTakeCamera();
-            }
-        });
+
+
+            com.github.clans.fab.FloatingActionButton btn_take_picture = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.btn_take_picture);
+            btn_take_picture.setVisibility(View.GONE);
+            //ViewGroup layout = (ViewGroup) btn_take_picture.getParent();
+
+            //if(layout!=null) layout.removeView(btn_take_picture);
+
+        }
+
 
 
 
@@ -118,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
                     if (thumbnail != null) {
                         Log.d("알림", "사진찍기 완료 완료");
                     }*/
+                    System.out.println("사진찍기 데이터 : "+data.getExtras().get("data").toString());
 
                     Intent intent = new Intent(this,WriteBoardActivity.class);
                     intent.setData(imageURI);
@@ -140,11 +158,24 @@ public class MainActivity extends AppCompatActivity {
             {
                 Uri imageURI = data.getData() ;
                 Log.d("알림", "이미지 가져오기 완료");
-
+                //System.out.println("갤러리 데이터 : "+data.getExtras().get("data").toString());
                 Intent intent = new Intent(this,WriteBoardActivity.class);
+                System.out.println("이미지 유알아이 세팅");
                 intent.setData(imageURI);
+                System.out.println("비트맵세팅");
+                Bitmap bitmap = null;
+                try {
+                    bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageURI));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                bitmap = scaleDownBitmap(bitmap,100,getApplicationContext());
+
+                intent.putExtra("data",bitmap);
                 intent.putExtra("type","gallery");
 
+                System.out.println("데이터는 모든 처리가 되었습니다");
                 startActivityForResult(intent,321);
             }
 
@@ -216,14 +247,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void register_answer(int board_id,Answer answer){
-        System.out.println("질문 등록 요청");
+        System.out.println("답변 등록 요청");
 
         ServerConnectionManager serverConnectionManager = ServerConnectionManager.getInstance();
         ServerConnectionService serverConnectionService = serverConnectionManager.getServerConnection();
 
-        //user 임시 세팅
-        User user = new User("rupitere@naver.com","고석현","normal");
-        User.setUser(user);
 
         Call<Boolean> registeranswer = serverConnectionService.register_answer(board_id,answer.getMedi_name(),answer.getAnswer_content(),answer.getMedi_element()
         ,answer.getMedi_company(),answer.getMedi_serialnumber(), answer.getMedi_category(),answer.getMedi_effect(),User.getInstance().getEmail());
@@ -254,7 +282,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void get_normaluser_boardlist(){
-        System.out.println("보드 데이터 요청");
+        System.out.println("일반유저 게시물 데이터 요청");
 
         ServerConnectionManager serverConnectionManager = ServerConnectionManager.getInstance();
         ServerConnectionService serverConnectionService = serverConnectionManager.getServerConnection();
@@ -292,6 +320,18 @@ public class MainActivity extends AppCompatActivity {
                 Log.w("서버 통신 실패",t.getMessage());
             }
         });
+    }
+
+    public Bitmap scaleDownBitmap(Bitmap photo, int newHeight, Context context) {
+
+        final float densityMultiplier = context.getResources().getDisplayMetrics().density;
+
+        int h= (int) (newHeight*densityMultiplier);
+        int w= (int) (h * photo.getWidth()/((double) photo.getHeight()));
+
+        photo=Bitmap.createScaledBitmap(photo, w, h, true);
+
+        return photo;
     }
 
 

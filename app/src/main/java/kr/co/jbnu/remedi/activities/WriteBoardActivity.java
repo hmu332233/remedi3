@@ -55,10 +55,16 @@ public class WriteBoardActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         imageUri = getIntent().getData();
-        Bitmap bitmap = (Bitmap) getIntent().getExtras().get("data");
-
         ImageView iv_medicine_image = (ImageView)findViewById(R.id.iv_medicine_image);
         iv_medicine_image.setImageURI(imageUri);
+        Bitmap bitmap;
+
+        System.out.println("비트맵을 가져오기전");
+
+        bitmap = (Bitmap) getIntent().getExtras().get("data");
+
+        System.out.println("비트맵을 가져온후");
+
         System.out.println(imageUri.toString());
 
 

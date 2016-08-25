@@ -58,7 +58,9 @@ public interface ServerConnectionService {
     @POST("/mobile/get_pharmacist_writtenboard")
     Call<ArrayList<Board>> get_pharmacist_writtenboard(@Field("id_string") String id);
 
-
+    @FormUrlEncoded
+    @POST("/mobile/sendGCM")
+    Call<Void> sendGCM(@Field("user_id") int user_id);
 
     @FormUrlEncoded
     @POST("/mobile/get_detail_board")
