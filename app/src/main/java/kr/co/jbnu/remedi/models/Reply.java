@@ -9,14 +9,14 @@ import java.sql.Date;
 public class Reply implements Serializable {
     private int id;
     private String content;
-    private String UserId;
+    private String userid;
     private int answer_id;
     private Date updated_at;
 
-    public Reply(int id, String content, String userId, int answer_id, Date updated_at) {
+    public Reply(int id, String content, String userid, int answer_id, Date updated_at) {
         this.id = id;
         this.content = content;
-        UserId = userId;
+        this.userid = userid;
         this.answer_id = answer_id;
         this.updated_at = updated_at;
     }
@@ -24,7 +24,7 @@ public class Reply implements Serializable {
     public Reply( String content, String userId) {
 
         this.content = content;
-        UserId = userId;
+        this.userid = userId;
 
     }
 
@@ -45,11 +45,11 @@ public class Reply implements Serializable {
     }
 
     public String getUserId() {
-        return UserId;
+        return userid;
     }
 
-    public void setUserId(String userId) {
-        UserId = userId;
+    public void setUserid(String userid) {
+        userid = userid;
     }
 
     public int getAnswer_id() {

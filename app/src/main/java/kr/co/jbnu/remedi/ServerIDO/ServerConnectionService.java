@@ -2,6 +2,7 @@ package kr.co.jbnu.remedi.serverIDO;
 
 import java.util.ArrayList;
 
+import kr.co.jbnu.remedi.models.Answer;
 import kr.co.jbnu.remedi.models.Board;
 import kr.co.jbnu.remedi.models.User;
 import retrofit2.Call;
@@ -35,9 +36,9 @@ public interface ServerConnectionService {
 
     @FormUrlEncoded
     @POST("/mobile/register_answer")
-    Call<Boolean> register_answer(@Field("board_id") int board_id,@Field("medi_name") String medi_name,@Field("answer_content") String answer_content,
-                                  @Field("medi_element") String medi_element,@Field("medi_company") String medi_company,@Field("medi_serialnumber") String medi_serialnumber,
-                                  @Field("medi_category") String medi_category,@Field("medi_effect") String medi_effect,@Field("pharm_email") String pharm_email);
+    Call<Answer> register_answer(@Field("board_id") int board_id, @Field("medi_name") String medi_name, @Field("answer_content") String answer_content,
+                                 @Field("medi_element") String medi_element, @Field("medi_company") String medi_company, @Field("medi_serialnumber") String medi_serialnumber,
+                                 @Field("medi_category") String medi_category, @Field("medi_effect") String medi_effect, @Field("pharm_email") String pharm_email);
 
 
     @FormUrlEncoded

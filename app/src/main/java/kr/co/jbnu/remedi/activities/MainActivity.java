@@ -56,7 +56,10 @@ public class MainActivity extends AppCompatActivity {
         {
             User.getInstance().setUserBoardList(new ArrayList<Board>());
             boards = User.getInstance().getUserBoardList();
+
         }
+
+
 
 
 
@@ -223,13 +226,10 @@ public class MainActivity extends AppCompatActivity {
                         medicine.getEnterprise(),medicine.getStandardCode(),medicine.getCategory(),medicine.getEffect(),"","");
                 System.out.println("medi category 확인 : "+answer.getMedi_category());
 
-                board.setAnswer(answer);
 
-                boards.set(index,board);
+                register_answer(board,answer,index);
 
-                register_answer(board.getId(),answer);
 
-                boardAdapter.notifyDataSetChanged();
             }
         });
 
@@ -251,33 +251,34 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, GlobalValue.TAKE_CAMERA);
     }
 
-    private void register_answer(int board_id,Answer answer){
+    private void register_answer(final Board board, Answer answer,final int index){
         System.out.println("답변 등록 요청");
 
         ServerConnectionManager serverConnectionManager = ServerConnectionManager.getInstance();
         ServerConnectionService serverConnectionService = serverConnectionManager.getServerConnection();
 
 
-        Call<Boolean> registeranswer = serverConnectionService.register_answer(board_id,answer.getMedi_name(),answer.getAnswer_content(),answer.getMedi_element()
+        Call<Answer> registeranswer = serverConnectionService.register_answer(board.getId(),answer.getMedi_name(),answer.getAnswer_content(),answer.getMedi_element()
         ,answer.getMedi_company(),answer.getMedi_serialnumber(), answer.getMedi_category(),answer.getMedi_effect(),User.getInstance().getEmail());
 
-        registeranswer.enqueue(new Callback<Boolean>() {
+        registeranswer.enqueue(new Callback<Answer>() {
 
             @Override
-            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
-                isConnectionOk = response.body();
-                System.out.println("존재 하는 값 확인"+isConnectionOk.toString());
-                if(isConnectionOk==true){
+            public void onResponse(Call<Answer> call, Response<Answer> response) {
+
+                //System.out.println("존재 하는 값 확인"+isConnectionOk.toString());
+
                     progressBarDialog.dismiss();
                     Toast.makeText(getApplicationContext(), "답변 등록 완료", Toast.LENGTH_SHORT).show();
-                }else{
-                    progressBarDialog.dismiss();
-                    Toast.makeText(getApplicationContext(), "답변 등록 오류", Toast.LENGTH_SHORT).show();
-                }
+                    Answer answer = response.body();
+                    board.setAnswer(answer);
+
+                    boards.set(index,board);
+                    boardAdapter.notifyDataSetChanged();
 
             }
             @Override
-            public void onFailure(Call<Boolean> call, Throwable t) {
+            public void onFailure(Call<Answer> call, Throwable t) {
                 //final TextView textView = (TextView) findViewById(R.id.textView);
                 //textView.setText("Something went wrong: " + t.getMessage());
                 progressBarDialog.dismiss();

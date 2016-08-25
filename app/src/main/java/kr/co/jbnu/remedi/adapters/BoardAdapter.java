@@ -29,6 +29,11 @@ import kr.co.jbnu.remedi.models.Answer;
 import kr.co.jbnu.remedi.models.Board;
 import kr.co.jbnu.remedi.models.Reply;
 import kr.co.jbnu.remedi.models.User;
+import kr.co.jbnu.remedi.serverIDO.ServerConnectionManager;
+import kr.co.jbnu.remedi.serverIDO.ServerConnectionService;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class BoardAdapter extends ArrayAdapter<Board> {
 
@@ -126,6 +131,7 @@ public class BoardAdapter extends ArrayAdapter<Board> {
 
                 //------댓글
                 ArrayList<Reply> replies = User.getInstance().getUserBoardList().get(position).getAnswer().getRepliesList();
+
                 if(replies == null)
                 {
                     replies = new ArrayList<Reply>();
@@ -169,9 +175,21 @@ public class BoardAdapter extends ArrayAdapter<Board> {
                         {
                             Log.d("현재 쓰는 위치의 컨텐츠 입니다.",getItem(position).getContent());
 
-                            User.getInstance().getUserBoardList().get(position).getAnswer().getRepliesList().add(0,new Reply(et_reply.getText().toString(),user.getName()));
+                            String content = et_reply.getText().toString();
+
+                            ArrayList<Reply> arr = User.getInstance().getUserBoardList().get(position).getAnswer().getRepliesList();
+                            if(arr==null){
+                                arr = new ArrayList<Reply>();
+                                System.out.println("답글 리스트 널입니다");
+                            }
+
+                            arr.add(0,new Reply(content,User.getInstance().getName()));
+                            register_reply(content,User.getInstance().getName(),User.getInstance().getUserBoardList().get(position).getAnswer().getId());
                             et_reply.setText("");
+
                             replyAdapter.notifyDataSetChanged();
+
+
                             return true;
                         }
 
@@ -265,5 +283,29 @@ public class BoardAdapter extends ArrayAdapter<Board> {
 
     public  void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d("알림", "onActivityResult");
+    }
+
+    private void register_reply(String content,String email,int answer_id){
+        System.out.println("댓글 등록 요청");
+
+        ServerConnectionManager serverConnectionManager = ServerConnectionManager.getInstance();
+        ServerConnectionService serverConnectionService = serverConnectionManager.getServerConnection();
+
+
+        final Call<Boolean> reply = serverConnectionService.register_reply(content,email,answer_id);
+        reply.enqueue(new Callback<Boolean>() {
+
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                System.out.println("댓글 등록 완료");
+            }
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                //final TextView textView = (TextView) findViewById(R.id.textView);
+                //textView.setText("Something went wrong: " + t.getMessage());
+                //progressBarDialog.dismiss();
+                Log.w("서버 통신 실패",t.getMessage());
+            }
+        });
     }
 }
