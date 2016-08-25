@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        boardAdapter = new BoardAdapter(this,User.getInstance(),User.getInstance().getUserBoardList());
+        boardAdapter = new BoardAdapter(this,User.getInstance(),boards);
         boardListView = (ListView) findViewById(R.id.lv_board);
         boardListView.setAdapter(boardAdapter);
 
@@ -195,10 +195,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void setAnswer(final int index, final Medicine medicine)
     {
-        View view = boardListView.getChildAt(index);
+        Log.d("보드인덱스",index+"");
+
+        View view = getViewByPosition(index,boardListView);
         final Board board = (Board)boardListView.getAdapter().getItem(index);
 
         TextView tv_medicine_name = (TextView) view.findViewById(R.id.tv_medicine_name);
+        Log.d("보드인덱스",medicine.getName());
         tv_medicine_name.setText(medicine.getName());
 
         final EditText et_answer = (EditText)view.findViewById(R.id.et_answer_content);
@@ -334,5 +337,16 @@ public class MainActivity extends AppCompatActivity {
         return photo;
     }
 
+    public View getViewByPosition(int pos, ListView listView) {
+        final int firstListItemPosition = listView.getFirstVisiblePosition();
+        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
+
+        if (pos < firstListItemPosition || pos > lastListItemPosition ) {
+            return listView.getAdapter().getView(pos, null, listView);
+        } else {
+            final int childIndex = pos - firstListItemPosition;
+            return listView.getChildAt(childIndex);
+        }
+    }
 
 }

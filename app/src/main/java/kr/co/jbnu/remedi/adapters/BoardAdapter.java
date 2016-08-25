@@ -38,6 +38,8 @@ public class BoardAdapter extends ArrayAdapter<Board> {
 
     ArrayList<Reply> replies;
 
+    int index;
+
 
     public BoardAdapter(Context _context, User _user, ArrayList<Board> boards) {
         super(_context, 0, boards);
@@ -48,6 +50,8 @@ public class BoardAdapter extends ArrayAdapter<Board> {
 
     @Override
     public View getView(final int position, final View convertView, ViewGroup parent) {
+
+        index = position;
 
         final Board board = getItem(position);
 
