@@ -36,8 +36,6 @@ public class BoardAdapter extends ArrayAdapter<Board> {
     Context context;
     User user;
 
-    ArrayList<Reply> replies;
-
     int index;
 
 
@@ -52,7 +50,7 @@ public class BoardAdapter extends ArrayAdapter<Board> {
     public View getView(final int position, final View convertView, ViewGroup parent) {
 
         index = position;
-
+        System.out.println("getview 호출");
         final Board board = getItem(position);
 
         final LayoutInflater inflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -86,6 +84,7 @@ public class BoardAdapter extends ArrayAdapter<Board> {
 
             if(board.getAnswer() != null)
             {
+
                 extra_btn.setVisibility(View.VISIBLE);
 
                 TextView tv_answer = (TextView) item.findViewById(R.id.tv_answer);
@@ -126,38 +125,16 @@ public class BoardAdapter extends ArrayAdapter<Board> {
 
 
                 //------댓글
-                replies = answer.getRepliesList();
+                ArrayList<Reply> replies = User.getInstance().getUserBoardList().get(position).getAnswer().getRepliesList();
                 if(replies == null)
                 {
                     replies = new ArrayList<Reply>();
+                    User.getInstance().getUserBoardList().get(position).getAnswer().setRepliesList(replies);
                 }
-
-
 
                 ListView lv_reply = (ListView) item.findViewById(R.id.lv_reply);
                 final ReplyAdapter replyAdapter = new ReplyAdapter(context,replies);
                 lv_reply.setAdapter(replyAdapter);
-
-
-                final EditText et_reply = (EditText) item.findViewById(R.id.et_reply);
-
-                et_reply.setOnKeyListener(new View.OnKeyListener() {
-                    @Override
-                    public boolean onKey(View v, int keyCode, KeyEvent event) {
-
-                        if(event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_ENTER)
-                        {
-                            Log.d("알림","ㅁㄴㅇㄹ");
-
-                            replies.add(0,new Reply(et_reply.getText().toString(),user.getName()));
-                            et_reply.setText("");
-                            replyAdapter.notifyDataSetChanged();
-                            return true;
-                        }
-
-                        return false;
-                    }
-                });
 
                 final LinearLayout layout_reply = (LinearLayout) item.findViewById(R.id.layout_reply);
 
@@ -182,6 +159,28 @@ public class BoardAdapter extends ArrayAdapter<Board> {
 
                 cv_reply.setVisibility(View.VISIBLE);
 
+                final EditText et_reply = (EditText) item.findViewById(R.id.et_reply);
+
+                et_reply.setOnKeyListener(new View.OnKeyListener() {
+                    @Override
+                    public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                        if(event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_ENTER)
+                        {
+                            Log.d("현재 쓰는 위치의 컨텐츠 입니다.",getItem(position).getContent());
+
+                            User.getInstance().getUserBoardList().get(position).getAnswer().getRepliesList().add(0,new Reply(et_reply.getText().toString(),user.getName()));
+                            et_reply.setText("");
+                            replyAdapter.notifyDataSetChanged();
+                            return true;
+                        }
+
+                        return false;
+                    }
+                });
+
+
+
             }
         }
         else
@@ -192,12 +191,17 @@ public class BoardAdapter extends ArrayAdapter<Board> {
             final LinearLayout layout_btn = (LinearLayout) item.findViewById(R.id.layout_btn);
             final LinearLayout layout_input = (LinearLayout) item.findViewById(R.id.layout_input);
 
+            final LinearLayout top = (LinearLayout)item.findViewById(R.id.answer_btn_top);
+            final LinearLayout bottom = (LinearLayout)item.findViewById(R.id.answer_btn_bottom);
+
             layout_btn_input.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
                     if( layout_btn.getVisibility() == View.VISIBLE)
                     {
+                        top.setVisibility(View.GONE);
+                        bottom.setVisibility(View.GONE);
                         layout_btn.setVisibility(View.GONE);
                         layout_input.setVisibility(View.VISIBLE);
                     }

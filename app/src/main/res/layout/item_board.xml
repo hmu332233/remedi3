@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="wrap_content"
@@ -55,7 +56,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:gravity="center"
-                android:text=" - 제목이 들어갈 칸입니다!" />
+                android:text=" - 제목이 들어갈 칸입니다!"
+                android:textStyle="bold"/>
 
             <LinearLayout
                 android:visibility="gone"
@@ -250,6 +252,21 @@
                             android:imeOptions="actionSend"
                             android:background="@drawable/background_textarea"/>
 
+                        <info.hoang8f.widget.FButton
+                            android:id="@+id/register_reply_btn"
+                            android:layout_weight="3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="등록"
+                            android:textSize="10dp"
+                            android:textColor="#ffffff"
+                            fbutton:buttonColor="@color/titlebar"
+                            fbutton:shadowColor="#5014a1"
+                            fbutton:shadowEnabled="true"
+                            fbutton:shadowHeight="2dp"
+                            fbutton:cornerRadius="8dp"
+
+                            />
                     </LinearLayout>
 
                 </LinearLayout>

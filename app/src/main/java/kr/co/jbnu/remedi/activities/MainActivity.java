@@ -26,7 +26,6 @@ import kr.co.jbnu.remedi.adapters.BoardAdapter;
 import kr.co.jbnu.remedi.models.Answer;
 import kr.co.jbnu.remedi.models.Board;
 import kr.co.jbnu.remedi.models.Medicine;
-import kr.co.jbnu.remedi.models.Reply;
 import kr.co.jbnu.remedi.models.User;
 import kr.co.jbnu.remedi.serverIDO.ServerConnectionManager;
 import kr.co.jbnu.remedi.serverIDO.ServerConnectionService;
@@ -61,10 +60,11 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
         boardAdapter = new BoardAdapter(this,User.getInstance(),boards);
         boardListView = (ListView) findViewById(R.id.lv_board);
         boardListView.setAdapter(boardAdapter);
+
+
 
 
         if(User.getInstance().getUser_type().equals("normal")){
@@ -118,6 +118,8 @@ public class MainActivity extends AppCompatActivity {
         });*/
        // t.start();
     }
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -284,46 +286,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void get_normaluser_boardlist(){
-        System.out.println("일반유저 게시물 데이터 요청");
 
-        ServerConnectionManager serverConnectionManager = ServerConnectionManager.getInstance();
-        ServerConnectionService serverConnectionService = serverConnectionManager.getServerConnection();
-
-        //user 임시 세팅
-        User user = new User("rupitere@naver.com","고석현","normal");
-        User.setUser(user);
-
-        final Call<ArrayList<Board>> board = serverConnectionService.get_normaluser_board(User.getInstance().getEmail());
-        board.enqueue(new Callback<ArrayList<Board>>() {
-
-            @Override
-            public void onResponse(Call<ArrayList<Board>> call, Response<ArrayList<Board>> response) {
-
-                ArrayList<Board> boardlist = response.body();
-                for(int i=0;i<boardlist.size();i++){
-                    System.out.println("board 아이디 : "+boardlist.get(i).getId());
-                    if(boardlist.get(i).getAnswer()!=null){
-                        Answer answer = boardlist.get(i).getAnswer();
-                        System.out.println("답글 내용"+answer.getMedi_name()+answer.getMedi_company()+answer.getMedi_effect());
-                        ArrayList<Reply> replies = answer.getRepliesList();
-                        if(replies!=null){
-                            for(int j=0;j<replies.size();j++)
-                                System.out.println("댓글 내용 : "+replies.get(j).getContent());
-                        }
-                    }
-                }
-
-            }
-            @Override
-            public void onFailure(Call<ArrayList<Board>> call, Throwable t) {
-                //final TextView textView = (TextView) findViewById(R.id.textView);
-                //textView.setText("Something went wrong: " + t.getMessage());
-                //progressBarDialog.dismiss();
-                Log.w("서버 통신 실패",t.getMessage());
-            }
-        });
-    }
 
     public Bitmap scaleDownBitmap(Bitmap photo, int newHeight, Context context) {
 
