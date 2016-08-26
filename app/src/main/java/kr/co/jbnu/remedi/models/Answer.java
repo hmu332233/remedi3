@@ -10,7 +10,7 @@ import java.util.Date;
 public class Answer implements Serializable {
     private int id;
     private String medi_name;
-    private String answoer_content;
+    private String answer_content;
     private String medi_element;
     private String medi_company;
     private String medi_serialnumber;
@@ -18,6 +18,7 @@ public class Answer implements Serializable {
     private String medi_effect;
     private String pharm_id;
     private String pharm_imgname;
+    private String pharm_name;
     private int board_id;
     private ArrayList<Reply> replies;
     private Date updated_at;
@@ -25,7 +26,7 @@ public class Answer implements Serializable {
     public Answer(int id, String medi_name, String answer_content, String medi_element, String medi_company, String medi_serialnumber, String medi_category, String medi_effect, String pharm_id, String pharm_imgname, int board_id, ArrayList<Reply> repliesList, Date updated_at) {
         this.id = id;
         this.medi_name = medi_name;
-        this.answoer_content = answer_content;
+        this.answer_content = answer_content;
         this.medi_element = medi_element;
         this.medi_company = medi_company;
         this.medi_serialnumber = medi_serialnumber;
@@ -40,7 +41,7 @@ public class Answer implements Serializable {
 
     public Answer(String medi_name, String answer_content, String medi_element, String medi_company, String medi_serialnumber, String medi_category, String medi_effect, String pharm_id, String pharm_imgname) {
         this.medi_name = medi_name;
-        this.answoer_content = answer_content;
+        this.answer_content = answer_content;
         this.medi_element = medi_element;
         this.medi_company = medi_company;
         this.medi_serialnumber = medi_serialnumber;
@@ -67,11 +68,11 @@ public class Answer implements Serializable {
     }
 
     public String getAnswer_content() {
-        return answoer_content;
+        return answer_content;
     }
 
     public void setAnswer_content(String answer_content) {
-        this.answoer_content = answer_content;
+        this.answer_content = answer_content;
     }
 
     public String getMedi_element() {
@@ -152,5 +153,29 @@ public class Answer implements Serializable {
 
     public void setUpdated_at(Date updated_at) {
         this.updated_at = updated_at;
+    }
+
+    public String getAnswoer_content() {
+        return answer_content;
+    }
+
+    public void setAnswoer_content(String answoer_content) {
+        this.answer_content = answoer_content;
+    }
+
+    public String getPharm_name() {
+        return pharm_name;
+    }
+
+    public void setPharm_name(String pharm_name) {
+        this.pharm_name = pharm_name;
+    }
+
+    public ArrayList<Reply> getReplies() {
+        return replies;
+    }
+
+    public void setReplies(ArrayList<Reply> replies) {
+        this.replies = replies;
     }
 }

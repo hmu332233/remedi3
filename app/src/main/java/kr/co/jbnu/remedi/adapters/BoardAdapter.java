@@ -40,6 +40,7 @@ public class BoardAdapter extends ArrayAdapter<Board> {
     String user_type;
     Context context;
     User user;
+    ArrayList<Board> borads;
 
     int index;
 
@@ -49,6 +50,7 @@ public class BoardAdapter extends ArrayAdapter<Board> {
         user = _user;
         user_type = user.getUser_type();
         context = _context;
+        this.borads = boards;
     }
 
     @Override
@@ -103,7 +105,7 @@ public class BoardAdapter extends ArrayAdapter<Board> {
                 layout_no_answer.setVisibility(View.GONE);
 
                 TextView tv_pharm_name = (TextView) item.findViewById(R.id.tv_pharm_name);
-                //tv_pharm_name.setText();
+                tv_pharm_name.setText(board.getAnswer().getPharm_name());
 
                 Answer answer = board.getAnswer();
 
@@ -184,7 +186,7 @@ public class BoardAdapter extends ArrayAdapter<Board> {
                             }
 
                             arr.add(0,new Reply(content,User.getInstance().getName()));
-                            register_reply(content,User.getInstance().getName(),User.getInstance().getUserBoardList().get(position).getAnswer().getId());
+                            register_reply(content,User.getInstance().getEmail(),User.getInstance().getUserBoardList().get(position).getAnswer().getId());
                             et_reply.setText("");
 
                             replyAdapter.notifyDataSetChanged();
@@ -292,7 +294,7 @@ public class BoardAdapter extends ArrayAdapter<Board> {
         ServerConnectionService serverConnectionService = serverConnectionManager.getServerConnection();
 
 
-        final Call<Boolean> reply = serverConnectionService.register_reply(content,email,answer_id);
+        final Call<Boolean> reply = serverConnectionService.register_reply(content,email,answer_id,User.getInstance().getName());
         reply.enqueue(new Callback<Boolean>() {
 
             @Override
@@ -307,5 +309,9 @@ public class BoardAdapter extends ArrayAdapter<Board> {
                 Log.w("서버 통신 실패",t.getMessage());
             }
         });
+    }
+
+    public void setBoardList(ArrayList<Board> boardss){
+        this.borads = boardss;
     }
 }

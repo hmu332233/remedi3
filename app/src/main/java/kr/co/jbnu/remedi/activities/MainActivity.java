@@ -26,6 +26,7 @@ import kr.co.jbnu.remedi.adapters.BoardAdapter;
 import kr.co.jbnu.remedi.models.Answer;
 import kr.co.jbnu.remedi.models.Board;
 import kr.co.jbnu.remedi.models.Medicine;
+import kr.co.jbnu.remedi.models.Reply;
 import kr.co.jbnu.remedi.models.User;
 import kr.co.jbnu.remedi.serverIDO.ServerConnectionManager;
 import kr.co.jbnu.remedi.serverIDO.ServerConnectionService;
@@ -38,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
 
     ListView boardListView;
     BoardAdapter boardAdapter;
-    ArrayList<Board> boards;
 
     private ProgressBarDialog progressBarDialog;
     private Boolean isConnectionOk = false;
@@ -49,21 +49,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //asdfasd
-        //asdfasdf
-        boards = User.getInstance().getUserBoardList();
-        if(boards == null)
+
+        progressBarDialog = new ProgressBarDialog(MainActivity.this);
+
+        if(User.getInstance().getUserBoardList() == null)
         {
             User.getInstance().setUserBoardList(new ArrayList<Board>());
-            boards = User.getInstance().getUserBoardList();
-
         }
 
 
 
 
 
-        boardAdapter = new BoardAdapter(this,User.getInstance(),boards);
+        boardAdapter = new BoardAdapter(this,User.getInstance(),User.getInstance().getUserBoardList());
         boardListView = (ListView) findViewById(R.id.lv_board);
         boardListView.setAdapter(boardAdapter);
 
@@ -90,11 +88,26 @@ public class MainActivity extends AppCompatActivity {
             com.github.clans.fab.FloatingActionButton btn_pick_gallery = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.btn_pick_gallery);
             btn_pick_gallery.setImageResource(R.drawable.checked1);
             btn_pick_gallery.setLabelText("답글 리스트 확인");
+            btn_pick_gallery.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    progressBarDialog.show();
+                    get_pharmacist_answerlist();
+                }
+            });
 
 
 
             com.github.clans.fab.FloatingActionButton btn_take_picture = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.btn_take_picture);
-            btn_take_picture.setVisibility(View.GONE);
+            btn_take_picture.setImageResource(R.drawable.checked1);
+            btn_take_picture.setLabelText("질문 리스트 확인");
+            btn_take_picture.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    progressBarDialog.show();
+                    get_pharmacist_boardlist();
+                }
+            });
             //ViewGroup layout = (ViewGroup) btn_take_picture.getParent();
 
             //if(layout!=null) layout.removeView(btn_take_picture);
@@ -187,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
             if( requestCode == 321 )
             {
 
-                boards.add((Board)data.getSerializableExtra("board"));
+                User.getInstance().getUserBoardList().add((Board)data.getSerializableExtra("board"));
                 boardAdapter.notifyDataSetChanged();
             }
         }
@@ -217,7 +230,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                progressBarDialog = new ProgressBarDialog(MainActivity.this);
                 progressBarDialog.show();
 
 
@@ -259,7 +271,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         Call<Answer> registeranswer = serverConnectionService.register_answer(board.getId(),answer.getMedi_name(),answer.getAnswer_content(),answer.getMedi_element()
-        ,answer.getMedi_company(),answer.getMedi_serialnumber(), answer.getMedi_category(),answer.getMedi_effect(),User.getInstance().getEmail());
+        ,answer.getMedi_company(),answer.getMedi_serialnumber(), answer.getMedi_category(),answer.getMedi_effect(),User.getInstance().getEmail(),User.getInstance().getName());
 
         registeranswer.enqueue(new Callback<Answer>() {
 
@@ -273,7 +285,7 @@ public class MainActivity extends AppCompatActivity {
                     Answer answer = response.body();
                     board.setAnswer(answer);
 
-                    boards.set(index,board);
+                    User.getInstance().getUserBoardList().set(index,board);
                     boardAdapter.notifyDataSetChanged();
 
             }
@@ -312,5 +324,113 @@ public class MainActivity extends AppCompatActivity {
             return listView.getChildAt(childIndex);
         }
     }
+
+    private void get_pharmacist_boardlist(){
+        System.out.println("약사 보드 데이터 요청");
+
+        ServerConnectionManager serverConnectionManager = ServerConnectionManager.getInstance();
+        ServerConnectionService serverConnectionService = serverConnectionManager.getServerConnection();
+
+        final Call<ArrayList<Board>> board = serverConnectionService.get_pharmacist_normalboard(User.getInstance().getEmail());
+        board.enqueue(new Callback<ArrayList<Board>>() {
+
+            @Override
+            public void onResponse(Call<ArrayList<Board>> call, Response<ArrayList<Board>> response) {
+
+                ArrayList<Board> boardlist = response.body();
+                User.getInstance().setUserBoardList(boardlist);
+                progressBarDialog.dismiss();
+                boardAdapter.clear();
+                boardAdapter.addAll(User.getInstance().getUserBoardList());
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        boardAdapter.notifyDataSetChanged();
+                        progressBarDialog.dismiss();
+                    }
+                }).start();
+
+                if(boardlist!=null){
+                    for(int i=0;i<boardlist.size();i++){
+                        System.out.println("board 아이디 : "+boardlist.get(i).getId());
+                        if(boardlist.get(i).getAnswer()!=null){
+                            Answer answer = boardlist.get(i).getAnswer();
+                            System.out.println("답글 내용"+answer.getMedi_name()+answer.getMedi_company()+answer.getMedi_effect());
+                            ArrayList<Reply> replies = answer.getRepliesList();
+                            if(replies!=null){
+                                for(int j=0;j<replies.size();j++)
+                                    System.out.println("댓글 내용 : "+replies.get(j).getContent());
+                            }
+                        }
+                    }
+                }
+
+            }
+            @Override
+            public void onFailure(Call<ArrayList<Board>> call, Throwable t) {
+                //final TextView textView = (TextView) findViewById(R.id.textView);
+                //textView.setText("Something went wrong: " + t.getMessage());
+                //progressBarDialog.dismiss();
+                Log.w("서버 통신 실패",t.getMessage());
+            }
+        });
+    }
+
+    private void get_pharmacist_answerlist(){
+        System.out.println("약사 답글 데이터 요청");
+
+        ServerConnectionManager serverConnectionManager = ServerConnectionManager.getInstance();
+        ServerConnectionService serverConnectionService = serverConnectionManager.getServerConnection();
+
+        final Call<ArrayList<Board>> board = serverConnectionService.get_pharmacist_writtenboard(User.getInstance().getEmail());
+        board.enqueue(new Callback<ArrayList<Board>>() {
+
+            @Override
+            public void onResponse(Call<ArrayList<Board>> call, Response<ArrayList<Board>> response) {
+
+                ArrayList<Board> boardlist = response.body();
+                User.getInstance().setUserBoardList(boardlist);
+                boardAdapter.clear();
+                boardAdapter.addAll(User.getInstance().getUserBoardList());
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        boardAdapter.notifyDataSetChanged();
+                        progressBarDialog.dismiss();
+                    }
+                }).start();
+
+
+
+                if(boardlist!=null){
+                    for(int i=0;i<boardlist.size();i++){
+                        System.out.println("board 아이디 : "+boardlist.get(i).getId());
+                        if(boardlist.get(i).getAnswer()!=null){
+                            Answer answer = boardlist.get(i).getAnswer();
+                            System.out.println("답글 내용"+answer.getMedi_name()+answer.getMedi_company()+answer.getMedi_effect());
+                            ArrayList<Reply> replies = answer.getRepliesList();
+                            if(replies!=null){
+                                for(int j=0;j<replies.size();j++)
+                                    System.out.println("댓글 내용 : "+replies.get(j).getContent());
+                            }
+                        }
+                    }
+                }
+
+
+
+            }
+            @Override
+            public void onFailure(Call<ArrayList<Board>> call, Throwable t) {
+                //final TextView textView = (TextView) findViewById(R.id.textView);
+                //textView.setText("Something went wrong: " + t.getMessage());
+                //progressBarDialog.dismiss();
+                Log.w("서버 통신 실패",t.getMessage());
+            }
+        });
+    }
+
+
 
 }

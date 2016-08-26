@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -57,27 +56,7 @@ public class TestActivity extends AppCompatActivity {
         User user = new User("rupitere@naver.com","고석현","normal");
         User.setUser(user);
 
-        final Call<Boolean> reply = serverConnectionService.register_reply(editText.getText().toString(),User.getInstance().getEmail(),1);
-        reply.enqueue(new Callback<Boolean>() {
 
-            @Override
-            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
-                isConnectionOk = response.body();
-                System.out.println("존재 하는 값 확인"+isConnectionOk.toString());
-                if(isConnectionOk==true){
-                    Toast.makeText(getApplicationContext(), "댓글 등록 완료", Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(getApplicationContext(), "댓글 등록 오류", Toast.LENGTH_SHORT).show();
-                }
-            }
-            @Override
-            public void onFailure(Call<Boolean> call, Throwable t) {
-                //final TextView textView = (TextView) findViewById(R.id.textView);
-                //textView.setText("Something went wrong: " + t.getMessage());
-                //progressBarDialog.dismiss();
-                Log.w("서버 통신 실패",t.getMessage());
-            }
-        });
     }
 
     private void get_normaluser_boardlist(){

@@ -10,6 +10,7 @@ public class Reply implements Serializable {
     private int id;
     private String content;
     private String userid;
+    private String user_name;
     private int answer_id;
     private Date updated_at;
 
@@ -66,5 +67,17 @@ public class Reply implements Serializable {
 
     public void setUpdated_at(Date updated_at) {
         this.updated_at = updated_at;
+    }
+
+    public String getUserid() {
+        return userid;
+    }
+
+    public String getUser_name() {
+        return user_name;
+    }
+
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
     }
 }

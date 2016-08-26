@@ -36,7 +36,7 @@ public class ReplyAdapter extends ArrayAdapter<Reply> {
         TextView tv_user_name = (TextView) item.findViewById(R.id.tv_user_name);
         TextView tv_content = (TextView) item.findViewById(R.id.tv_content);
 
-        tv_user_name.setText(reply.getUserId());
+        tv_user_name.setText(reply.getUser_name());
         tv_content.setText(reply.getContent());
 
         return item;

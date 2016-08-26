@@ -38,7 +38,7 @@ public interface ServerConnectionService {
     @POST("/mobile/register_answer")
     Call<Answer> register_answer(@Field("board_id") int board_id, @Field("medi_name") String medi_name, @Field("answer_content") String answer_content,
                                  @Field("medi_element") String medi_element, @Field("medi_company") String medi_company, @Field("medi_serialnumber") String medi_serialnumber,
-                                 @Field("medi_category") String medi_category, @Field("medi_effect") String medi_effect, @Field("pharm_email") String pharm_email);
+                                 @Field("medi_category") String medi_category, @Field("medi_effect") String medi_effect, @Field("pharm_email") String pharm_email, @Field("pharm_name") String pharm_name);
 
 
     @FormUrlEncoded
@@ -47,7 +47,7 @@ public interface ServerConnectionService {
 
     @FormUrlEncoded
     @POST("/mobile/register_reply")
-    Call<Boolean> register_reply(@Field("content") String content,@Field("email") String email,@Field("answer_id") int answer_id);
+    Call<Boolean> register_reply(@Field("content") String content,@Field("email") String email,@Field("answer_id") int answer_id,@Field("user_name") String user_name);
 
 
 
@@ -57,7 +57,7 @@ public interface ServerConnectionService {
 
     @FormUrlEncoded
     @POST("/mobile/get_pharmacist_writtenboard")
-    Call<ArrayList<Board>> get_pharmacist_writtenboard(@Field("id_string") String id);
+    Call<ArrayList<Board>> get_pharmacist_writtenboard(@Field("email") String email);
 
     @FormUrlEncoded
     @POST("/mobile/sendGCM")
