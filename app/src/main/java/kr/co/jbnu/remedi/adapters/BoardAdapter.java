@@ -139,7 +139,12 @@ public class BoardAdapter extends ArrayAdapter<Board> {
                     User.getInstance().getUserBoardList().get(position).getAnswer().setRepliesList(replies);
                 }
 
-                ListView lv_reply = (ListView) item.findViewById(R.id.lv_reply);
+                final ListView lv_reply = (ListView) item.findViewById(R.id.lv_reply);
+
+                ViewGroup.LayoutParams params = lv_reply.getLayoutParams();
+                params.height = User.getInstance().getUserBoardList().get(position).getAnswer().getRepliesList().size()*123;
+                lv_reply.setLayoutParams(params);
+                lv_reply.requestLayout();
 
 
                 final ReplyAdapter replyAdapter = new ReplyAdapter(context,replies);
@@ -184,8 +189,13 @@ public class BoardAdapter extends ArrayAdapter<Board> {
                                 System.out.println("답글 리스트 널입니다");
                             }
                             User.getInstance().getUserBoardList().get(position).getAnswer().getRepliesList().add(new Reply(content,User.getInstance().getName()));
-
                             register_reply(content,User.getInstance().getEmail(),User.getInstance().getUserBoardList().get(position).getAnswer().getId());
+
+                            ViewGroup.LayoutParams params = lv_reply.getLayoutParams();
+                            params.height = User.getInstance().getUserBoardList().get(position).getAnswer().getRepliesList().size()*123;
+                            lv_reply.setLayoutParams(params);
+                            lv_reply.requestLayout();
+
                             et_reply.setText("");
                             //replyAdapter.insert(new Reply(content,User.getInstance().getName()),0);
                             replyAdapter.notifyDataSetChanged();
@@ -205,6 +215,7 @@ public class BoardAdapter extends ArrayAdapter<Board> {
         {
             item = inflater.inflate(R.layout.item_board_pharm,null);
 
+            final CardView cardViewinanswer = (CardView)item.findViewById(R.id.card_view);
             LinearLayout layout_btn_input = (LinearLayout) item.findViewById(R.id.layout_btn_input);
             final LinearLayout layout_btn = (LinearLayout) item.findViewById(R.id.layout_btn);
             final LinearLayout layout_input = (LinearLayout) item.findViewById(R.id.layout_input);
@@ -223,7 +234,10 @@ public class BoardAdapter extends ArrayAdapter<Board> {
                         layout_btn.setVisibility(View.GONE);
                         layout_input.setVisibility(View.VISIBLE);
                     }
-
+                    ViewGroup.LayoutParams params = cardViewinanswer.getLayoutParams();
+                    params.height = 800;
+                    cardViewinanswer.setLayoutParams(params);
+                    cardViewinanswer.requestLayout();
 /*
                     Intent intent = new Intent(context, AnswerActivity.class);
 

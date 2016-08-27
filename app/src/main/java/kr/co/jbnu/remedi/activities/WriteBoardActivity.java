@@ -3,6 +3,7 @@ package kr.co.jbnu.remedi.activities;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -61,7 +62,9 @@ public class WriteBoardActivity extends AppCompatActivity {
 
         System.out.println("비트맵을 가져오기전");
 
-        bitmap = (Bitmap) getIntent().getExtras().get("data");
+        byte[] bytes = getIntent().getByteArrayExtra("data");
+        bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        //bitmap = (Bitmap) getIntent().getParcelableExtra("data");
 
         System.out.println("비트맵을 가져온후");
 
