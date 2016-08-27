@@ -6,8 +6,8 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/medicine_name"
@@ -15,39 +15,106 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textColor="@color/medicineListColor"
+            android:textSize="18dp"
+            android:textStyle="bold"
             android:text="제품명"/>
 
-        <TextView
-            android:id="@+id/medicine_ingredient"
-            android:layout_weight="15"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textColor="@color/medicineListColor"
-            android:text="주성분"/>
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/medicine_ingredientCount"
-            android:layout_weight="20"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textColor="@color/medicineListColor"
-            android:text="주성분수"/>
+            <TextView
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="성분 : "
+                android:textColor="@color/medicineListColor"
+                android:textSize="15dp"/>
 
-        <TextView
-            android:id="@+id/medicine_enterprise"
-            android:layout_weight="20"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textColor="@color/medicineListColor"
-            android:text="업체명"/>
 
-        <TextView
-            android:id="@+id/medicine_category"
-            android:layout_weight="20"
+            <TextView
+                android:id="@+id/medicine_ingredient"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textColor="@color/medicineListColor"
+                android:textSize="15dp"
+                android:text="주성분"/>
+
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/medicine_ingredientCount"
+                android:layout_weight="20"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textColor="@color/medicineListColor"
+                android:textSize="15dp"
+                android:text="주성분수"/>
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textColor="@color/medicineListColor"
-            android:text="전문/일반"/>
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="회사 : "
+                android:textColor="@color/medicineListColor"
+                android:textSize="15dp"/>
+
+
+
+            <TextView
+                android:id="@+id/medicine_enterprise"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textColor="@color/medicineListColor"
+                android:textSize="15dp"
+                android:text="업체명"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="전문/일반 : "
+                android:textColor="@color/medicineListColor"
+                android:textSize="15dp"/>
+
+
+
+            <TextView
+                android:id="@+id/medicine_category"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textColor="@color/medicineListColor"
+                android:textSize="15dp"
+                android:text="전문/일반"/>
+
+
+
+        </LinearLayout>
+
+
+
+
+
+
+
 
     </LinearLayout>
 

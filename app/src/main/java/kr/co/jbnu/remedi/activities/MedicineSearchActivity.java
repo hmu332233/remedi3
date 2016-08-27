@@ -84,6 +84,14 @@ public class MedicineSearchActivity extends AppCompatActivity {
             }
         });
 
+        Button btn_cancel = (Button) findViewById(R.id.btn_cancel);
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         tv_medicine_name = (TextView) findViewById(R.id.medicine_name);
         tv_medicine_element = (TextView) findViewById(R.id.medicine_element);
         tv_medicine_company = (TextView) findViewById(R.id.medicine_enterprise);
