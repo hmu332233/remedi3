@@ -18,7 +18,6 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -36,6 +35,7 @@ import kr.co.jbnu.remedi.Utils.GlobalValue;
 import kr.co.jbnu.remedi.Utils.ProgressBarDialog;
 import kr.co.jbnu.remedi.Utils.SharePreferenceUtil;
 import kr.co.jbnu.remedi.adapters.BoardAdapter;
+import kr.co.jbnu.remedi.adapters.ProfileMenuAdapter;
 import kr.co.jbnu.remedi.models.Answer;
 import kr.co.jbnu.remedi.models.Board;
 import kr.co.jbnu.remedi.models.Medicine;
@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
     private Boolean isConnectionOk = false;
 
 
-    private String[] navItems = {"로그 아웃"};
     private ListView lvNavList;
     private FrameLayout flContainer;
 
@@ -69,12 +68,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ArrayList<String> navItems = new ArrayList<>();
+        navItems.add("프로필 이미지 변경");
+        navItems.add("아이디 패스워드 변경");
+        navItems.add("로그아웃");
 
+        TextView profile_name_textview = (TextView)findViewById(R.id.profile_name_textview_setting);
+        TextView profile_email_textview = (TextView)findViewById(R.id.profile_email_textview_setting);
+
+        profile_email_textview.setText(User.getInstance().getEmail());
+        profile_name_textview.setText(User.getInstance().getName());
 
         lvNavList = (ListView)findViewById(R.id.left_drawer);
 
-        lvNavList.setAdapter(
-                new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, navItems));
+        lvNavList.setAdapter(new ProfileMenuAdapter(this,R.layout.item_profile_menu,navItems));
         lvNavList.setOnItemClickListener(new DrawerItemClickListener());
 
         dlDrawer = (DrawerLayout)findViewById(R.id.drawer_layout);
@@ -110,9 +117,6 @@ public class MainActivity extends AppCompatActivity {
         {
             User.getInstance().setUserBoardList(new ArrayList<Board>());
         }
-
-
-
 
 
         boardAdapter = new BoardAdapter(this,User.getInstance(),User.getInstance().getUserBoardList());
@@ -367,9 +371,7 @@ public class MainActivity extends AppCompatActivity {
                     board.setAnswer(answer);
 
                     User.getInstance().getUserBoardList().set(index,board);
-                    boardAdapter.add(board);
                     boardAdapter.notifyDataSetChanged();
-
             }
             @Override
             public void onFailure(Call<Answer> call, Throwable t) {
@@ -505,6 +507,11 @@ public class MainActivity extends AppCompatActivity {
                                 long id) {
             switch(position){
                 case 0:
+                    break;
+                case 1:
+                    break;
+
+                case 2:
                     SharePreferenceUtil sharePreferenceUtil = SharePreferenceUtil.getInstance();
                     sharePreferenceUtil.deleteUser(getApplicationContext());
                     Intent intent = new Intent(MainActivity.this, IntroActivity.class);
@@ -512,7 +519,7 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                     break;
             }
-            dlDrawer.closeDrawer(lvNavList);
+            dlDrawer.closeDrawer(Gravity.LEFT);
         }
 
     }
