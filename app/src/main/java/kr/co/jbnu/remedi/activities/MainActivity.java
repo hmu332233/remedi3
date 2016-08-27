@@ -2,16 +2,27 @@ package kr.co.jbnu.remedi.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +33,7 @@ import java.util.ArrayList;
 import kr.co.jbnu.remedi.R;
 import kr.co.jbnu.remedi.Utils.GlobalValue;
 import kr.co.jbnu.remedi.Utils.ProgressBarDialog;
+import kr.co.jbnu.remedi.Utils.SharePreferenceUtil;
 import kr.co.jbnu.remedi.adapters.BoardAdapter;
 import kr.co.jbnu.remedi.models.Answer;
 import kr.co.jbnu.remedi.models.Board;
@@ -44,11 +56,52 @@ public class MainActivity extends AppCompatActivity {
     private Boolean isConnectionOk = false;
 
 
+    private String[] navItems = {"로그 아웃"};
+    private ListView lvNavList;
+    private FrameLayout flContainer;
+
+    private DrawerLayout dlDrawer;
+    private ActionBarDrawerToggle dtToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+
+        lvNavList = (ListView)findViewById(R.id.left_drawer);
+
+        lvNavList.setAdapter(
+                new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, navItems));
+        lvNavList.setOnItemClickListener(new DrawerItemClickListener());
+
+        dlDrawer = (DrawerLayout)findViewById(R.id.drawer_layout);
+        dtToggle = new ActionBarDrawerToggle(this, dlDrawer,
+                R.drawable.ic_drawer, R.string.open_drawer, R.string.close_drawer){
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
+
+        };
+        dlDrawer.setDrawerListener(dtToggle);
+
+        ImageButton settingimgbutton = (ImageButton)findViewById(R.id.setting_btn);
+        settingimgbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dlDrawer.openDrawer(Gravity.LEFT);
+            }
+        });
+
+
 
         progressBarDialog = new ProgressBarDialog(MainActivity.this);
 
@@ -286,6 +339,7 @@ public class MainActivity extends AppCompatActivity {
                     board.setAnswer(answer);
 
                     User.getInstance().getUserBoardList().set(index,board);
+                    boardAdapter.add(board);
                     boardAdapter.notifyDataSetChanged();
 
             }
@@ -340,16 +394,7 @@ public class MainActivity extends AppCompatActivity {
                 ArrayList<Board> boardlist = response.body();
                 User.getInstance().setUserBoardList(boardlist);
                 progressBarDialog.dismiss();
-                boardAdapter.clear();
-                boardAdapter.addAll(User.getInstance().getUserBoardList());
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        boardAdapter.notifyDataSetChanged();
-                        progressBarDialog.dismiss();
-                    }
-                }).start();
+                boardchangeNotify();
 
                 if(boardlist!=null){
                     for(int i=0;i<boardlist.size();i++){
@@ -391,15 +436,7 @@ public class MainActivity extends AppCompatActivity {
 
                 ArrayList<Board> boardlist = response.body();
                 User.getInstance().setUserBoardList(boardlist);
-                boardAdapter.clear();
-                boardAdapter.addAll(User.getInstance().getUserBoardList());
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        boardAdapter.notifyDataSetChanged();
-                        progressBarDialog.dismiss();
-                    }
-                }).start();
+                boardchangeNotify();
 
 
 
@@ -430,6 +467,71 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
+
+    private class DrawerItemClickListener implements ListView.OnItemClickListener{
+
+        @Override
+        public void onItemClick(AdapterView<?> adapter, View view, int position,
+                                long id) {
+            switch(position){
+                case 0:
+                    SharePreferenceUtil sharePreferenceUtil = SharePreferenceUtil.getInstance();
+                    sharePreferenceUtil.deleteUser(getApplicationContext());
+                    Intent intent = new Intent(MainActivity.this, IntroActivity.class);
+                    startActivity(intent);
+                    finish();
+                    break;
+            }
+            dlDrawer.closeDrawer(lvNavList);
+        }
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(dtToggle.onOptionsItemSelected(item)){
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        dtToggle.onConfigurationChanged(newConfig);
+    }
+
+    private void boardchangeNotify(){
+        final Handler handler = new Handler()
+        {
+            public void handleMessage(Message msg)
+            {
+                // 원래 하고싶었던 일들 (UI변경작업 등...)
+                boardAdapter.clear();
+                boardAdapter.addAll(User.getInstance().getUserBoardList());
+                boardAdapter.notifyDataSetChanged();
+                progressBarDialog.dismiss();
+            }
+        };
+
+        new Thread()
+        {
+
+            public void run()
+            {
+                Message msg = handler.obtainMessage();
+                handler.sendMessage(msg);
+            }
+
+        }.start();
+    }
+
+
+
 
 
 

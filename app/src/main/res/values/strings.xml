@@ -23,4 +23,8 @@
     <string name="personal_using_agreement"><u>개인정보 취급 방침</u></string>
     <string name="id_and_password_find_text"><u>아이디, 비밀번호</u></string>
 
+    <string name="open_drawer">Open drawer</string>
+    <string name="close_drawer">Close drawer</string>
+
+
 </resources>

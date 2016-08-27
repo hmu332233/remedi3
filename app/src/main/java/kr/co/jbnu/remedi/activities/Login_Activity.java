@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 
 import kr.co.jbnu.remedi.R;
 import kr.co.jbnu.remedi.Utils.ProgressBarDialog;
+import kr.co.jbnu.remedi.Utils.SharePreferenceUtil;
 import kr.co.jbnu.remedi.gcm.PreferenceUtil;
 import kr.co.jbnu.remedi.models.Answer;
 import kr.co.jbnu.remedi.models.Board;
@@ -39,6 +41,7 @@ public class Login_Activity extends AppCompatActivity {
     EditText idText;
     EditText pwText;
     Button login_btn;
+    CheckBox auto_login_checkbox;
     private ProgressBarDialog progressBarDialog;
 
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -56,6 +59,21 @@ public class Login_Activity extends AppCompatActivity {
         initComponent();
         initEvent();
 
+        SharePreferenceUtil shareutil = SharePreferenceUtil.getInstance();
+        User user = shareutil.getUser(getApplicationContext());
+
+        if(getIntent().hasExtra("intent")){ // 지시엠 알람으로 넘어온 경우
+            if(user!=null){ // 자동로그인 되있는경우
+                User.setUser(user);
+                progressBarDialog.show();
+                if(User.getInstance().getUser_type().equals("normal")){
+                    get_normaluser_boardlist();
+                }else{
+                    get_pharmacist_boardlist();
+                }
+            }
+        }
+
 
     }
 
@@ -64,7 +82,8 @@ public class Login_Activity extends AppCompatActivity {
         idText = (EditText) findViewById(R.id.login_email_input);
         pwText = (EditText) findViewById(R.id.login_password_input);
         login_btn = (Button) findViewById(R.id.sign_in_button);
-
+        auto_login_checkbox = (CheckBox)findViewById(R.id.auto_login_checkbox);
+        progressBarDialog = new ProgressBarDialog(Login_Activity.this);
     }
 
     private void initEvent(){
@@ -72,7 +91,6 @@ public class Login_Activity extends AppCompatActivity {
         login_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressBarDialog = new ProgressBarDialog(Login_Activity.this);
                 progressBarDialog.show();
                 loginRequset();
 
@@ -100,33 +118,36 @@ public class Login_Activity extends AppCompatActivity {
                 }
                 else{
                     Toast.makeText(getApplicationContext(), "로그인 성공"+user.getEmail(), Toast.LENGTH_SHORT).show();
-
+                    if(auto_login_checkbox.isChecked()){
+                        SharePreferenceUtil shareutil = SharePreferenceUtil.getInstance();
+                        shareutil.storeUser(User.getInstance(),getApplicationContext());
+                    }
 
                     if(user.getRegister_id()==null){ // 웹에서 회원가입을 한경우
-                            if(getRegistrationId()!=null) { // 현재 레지스트레이션 아이디가 존재한다면 서버에 저장한다.
-                                registration_id = getRegistrationId();
-                                User.getInstance().setRegister_id(registration_id);
-                                updateRegisterId();
-                            }else{ // 아에 없는 경우임으로 새로 발급한다.
-                                getRegisterIdFromServer();
-                            }
+                        if(getRegistrationId()!=null) { // 현재 레지스트레이션 아이디가 존재한다면 서버에 저장한다.
+                            registration_id = getRegistrationId();
+                            User.getInstance().setRegister_id(registration_id);
+                            updateRegisterId();
+                        }else{ // 아에 없는 경우임으로 새로 발급한다.
+                            getRegisterIdFromServer();
+                        }
                     }else{
-                            if(getRegistrationId()!=null){
-                                if(getRegistrationId().equals(User.getInstance().getRegister_id())==false){ // 레지스트아이디가 있는데 현재 아이디와 서버의 아이디가 다르면 현재 있는 것을 서버에 저장한다.
-                                    registration_id = getRegistrationId();
-                                    updateRegisterId();
-                                }else{// 기존 사용자임으로 그냥 진행하면 된다.
+                        if(getRegistrationId()!=null){
+                            if(getRegistrationId().equals(User.getInstance().getRegister_id())==false){ // 레지스트아이디가 있는데 현재 아이디와 서버의 아이디가 다르면 현재 있는 것을 서버에 저장한다.
+                                registration_id = getRegistrationId();
+                                updateRegisterId();
+                            }else{// 기존 사용자임으로 그냥 진행하면 된다.
 
-                                    if(User.getInstance().getUser_type().equals("normal")) get_normaluser_boardlist();
-                                    else get_pharmacist_boardlist();
-
-
-                                }
-                            }else{ //웹에서 가져온 레지스트 레이션을 preferecne에 저장하고 진행한다.
-                                storeRegistrationId(User.getInstance().getRegister_id());
                                 if(User.getInstance().getUser_type().equals("normal")) get_normaluser_boardlist();
                                 else get_pharmacist_boardlist();
+
+
                             }
+                        }else{ //웹에서 가져온 레지스트 레이션을 preferecne에 저장하고 진행한다.
+                            storeRegistrationId(User.getInstance().getRegister_id());
+                            if(User.getInstance().getUser_type().equals("normal")) get_normaluser_boardlist();
+                            else get_pharmacist_boardlist();
+                        }
                     }
                 }
 
@@ -176,7 +197,7 @@ public class Login_Activity extends AppCompatActivity {
         if (checkPlayServices())
         {
             _gcm = GoogleCloudMessaging.getInstance(this);
-             registerInBackground();
+            registerInBackground();
         }
         else
         {

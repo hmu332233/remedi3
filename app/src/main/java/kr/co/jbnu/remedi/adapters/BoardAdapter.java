@@ -41,7 +41,6 @@ public class BoardAdapter extends ArrayAdapter<Board> {
     Context context;
     User user;
     ArrayList<Board> borads;
-
     int index;
 
 
@@ -141,6 +140,8 @@ public class BoardAdapter extends ArrayAdapter<Board> {
                 }
 
                 ListView lv_reply = (ListView) item.findViewById(R.id.lv_reply);
+
+
                 final ReplyAdapter replyAdapter = new ReplyAdapter(context,replies);
                 lv_reply.setAdapter(replyAdapter);
 
@@ -157,8 +158,6 @@ public class BoardAdapter extends ArrayAdapter<Board> {
                             /*
                             * 여기다가 클릭하면 로딩ㅇ할수있게
                             */
-
-                            replyAdapter.notifyDataSetChanged();
                         }
                         else
                             layout_reply.setVisibility(View.GONE);
@@ -180,17 +179,16 @@ public class BoardAdapter extends ArrayAdapter<Board> {
                             String content = et_reply.getText().toString();
 
                             ArrayList<Reply> arr = User.getInstance().getUserBoardList().get(position).getAnswer().getRepliesList();
-                            if(arr==null){
+                            if(arr==null) {
                                 arr = new ArrayList<Reply>();
                                 System.out.println("답글 리스트 널입니다");
                             }
+                            User.getInstance().getUserBoardList().get(position).getAnswer().getRepliesList().add(new Reply(content,User.getInstance().getName()));
 
-                            arr.add(0,new Reply(content,User.getInstance().getName()));
                             register_reply(content,User.getInstance().getEmail(),User.getInstance().getUserBoardList().get(position).getAnswer().getId());
                             et_reply.setText("");
-
+                            //replyAdapter.insert(new Reply(content,User.getInstance().getName()),0);
                             replyAdapter.notifyDataSetChanged();
-
 
                             return true;
                         }
@@ -314,4 +312,6 @@ public class BoardAdapter extends ArrayAdapter<Board> {
     public void setBoardList(ArrayList<Board> boardss){
         this.borads = boardss;
     }
+
+
 }

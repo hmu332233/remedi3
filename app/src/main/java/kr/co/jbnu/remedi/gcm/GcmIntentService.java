@@ -11,7 +11,7 @@ import android.support.v4.app.NotificationCompat;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import kr.co.jbnu.remedi.R;
-import kr.co.jbnu.remedi.activities.MainActivity;
+import kr.co.jbnu.remedi.activities.Login_Activity;
 
 /**
  * Created by seokhyeon on 2016-08-20.
@@ -71,9 +71,10 @@ public class GcmIntentService extends IntentService
     {
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        Intent intent = new Intent(getApplicationContext(), Login_Activity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra("msg", msg);
+        intent.putExtra("intent","intent");
 
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 

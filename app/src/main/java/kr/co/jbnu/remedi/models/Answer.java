@@ -23,7 +23,7 @@ public class Answer implements Serializable {
     private ArrayList<Reply> replies;
     private Date updated_at;
 
-    public Answer(int id, String medi_name, String answer_content, String medi_element, String medi_company, String medi_serialnumber, String medi_category, String medi_effect, String pharm_id, String pharm_imgname, int board_id, ArrayList<Reply> repliesList, Date updated_at) {
+    public Answer(int id, String medi_name, String answer_content, String medi_element, String medi_company, String medi_serialnumber, String medi_category, String medi_effect, String pharm_id, String pharm_imgname, int board_id, ArrayList<Reply> repliesList, Date updated_at,String pharm_name) {
         this.id = id;
         this.medi_name = medi_name;
         this.answer_content = answer_content;
@@ -37,6 +37,7 @@ public class Answer implements Serializable {
         this.board_id = board_id;
         this.replies = repliesList;
         this.updated_at = updated_at;
+        this.pharm_name = pharm_name;
     }
 
     public Answer(String medi_name, String answer_content, String medi_element, String medi_company, String medi_serialnumber, String medi_category, String medi_effect, String pharm_id, String pharm_imgname) {

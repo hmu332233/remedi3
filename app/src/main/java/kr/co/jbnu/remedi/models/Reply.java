@@ -14,18 +14,19 @@ public class Reply implements Serializable {
     private int answer_id;
     private Date updated_at;
 
-    public Reply(int id, String content, String userid, int answer_id, Date updated_at) {
+    public Reply(int id, String content, String userid, int answer_id, Date updated_at,String user_name) {
         this.id = id;
         this.content = content;
         this.userid = userid;
         this.answer_id = answer_id;
         this.updated_at = updated_at;
+        this.user_name = user_name;
     }
 
-    public Reply( String content, String userId) {
+    public Reply( String content, String username) {
 
         this.content = content;
-        this.userid = userId;
+        this.user_name = username;
 
     }
 
