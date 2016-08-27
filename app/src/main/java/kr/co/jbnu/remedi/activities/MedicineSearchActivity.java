@@ -1,20 +1,24 @@
 package kr.co.jbnu.remedi.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import kr.co.jbnu.remedi.R;
+import kr.co.jbnu.remedi.Utils.ProgressBarDialog;
 import kr.co.jbnu.remedi.adapters.MedicineAdapter;
 import kr.co.jbnu.remedi.models.Medicine;
 import kr.co.jbnu.remedi.parser.Medicine_Parser;
@@ -38,6 +42,7 @@ public class MedicineSearchActivity extends AppCompatActivity {
     TextView tv_medicine_category;
     TextView tv_medicine_effect;
 
+    ProgressBarDialog progressBarDialog;
 
     @Override
     protected void onCreate( Bundle savedInstanceState) {
@@ -46,14 +51,24 @@ public class MedicineSearchActivity extends AppCompatActivity {
 
         medicineListView = (ListView)findViewById(R.id.lv_medicine);
 
+        progressBarDialog = new ProgressBarDialog(this);
+
         final EditText editText = (EditText)findViewById(R.id.et_medicine_name);
         Button btn = (Button)findViewById(R.id.btn_search);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                m = new MedicineListTask();
-                m.execute(editText.getText()+"");
 
+                if( editText.getText().toString().equals("") )
+                    Toast.makeText(getBaseContext(),"검색어를 입력해주세요",Toast.LENGTH_SHORT).show();
+                else
+                {
+                    m = new MedicineListTask();
+                    m.execute(editText.getText()+"");
+                }
+
+                InputMethodManager mInputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                mInputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
             }
         });
 
@@ -75,9 +90,17 @@ public class MedicineSearchActivity extends AppCompatActivity {
         tv_medicine_serialnumber = (TextView) findViewById(R.id.medicine_standardCode);
         tv_medicine_category = (TextView) findViewById(R.id.medicine_category);
         tv_medicine_effect = (TextView) findViewById(R.id.medicine_effect);
+
+
+
     }
 
     public class MedicineListTask extends AsyncTask<String,String,ArrayList<Medicine>> {
+
+        @Override
+        protected void onPreExecute() {
+            progressBarDialog.show();
+        }
 
         @Override
         protected ArrayList<Medicine> doInBackground(String... params) {
@@ -109,6 +132,7 @@ public class MedicineSearchActivity extends AppCompatActivity {
                 }
             });
 
+            progressBarDialog.dismiss();
         }
     }
 
