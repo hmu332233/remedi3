@@ -3,6 +3,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="board_size_h">370dp</dimen>
+    <dimen name="board_size_h">320dp</dimen>
     <dimen name="board_size_w">300dp</dimen>
 </resources>

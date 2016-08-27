@@ -27,6 +27,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
@@ -120,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+        final com.github.clans.fab.FloatingActionMenu fabmenu = (com.github.clans.fab.FloatingActionMenu)findViewById(R.id.menu);
 
         if(User.getInstance().getUser_type().equals("normal")){
             com.github.clans.fab.FloatingActionButton btn_pick_gallery = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.btn_pick_gallery);
@@ -127,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     getImageFromGallery();
+                    fabmenu.close(true);
                 }
             });
 
@@ -138,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }else{
+
             com.github.clans.fab.FloatingActionButton btn_pick_gallery = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.btn_pick_gallery);
             btn_pick_gallery.setImageResource(R.drawable.checked1);
             btn_pick_gallery.setLabelText("답글 리스트 확인");
@@ -146,6 +150,8 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     progressBarDialog.show();
                     get_pharmacist_answerlist();
+                    fabmenu.close(true);
+
                 }
             });
 
@@ -159,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     progressBarDialog.show();
                     get_pharmacist_boardlist();
+                    fabmenu.close(true);
                 }
             });
             //ViewGroup layout = (ViewGroup) btn_take_picture.getParent();
@@ -210,7 +217,22 @@ public class MainActivity extends AppCompatActivity {
 
                     Intent intent = new Intent(this,WriteBoardActivity.class);
                     intent.setData(imageURI);
-                    intent.putExtra("data",(Bitmap)data.getExtras().get("data"));
+
+                    Bitmap bitmap = null;
+                    try {
+                        bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageURI));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    bitmap = scaleDownBitmap(bitmap,100,getApplicationContext());
+
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                    byte[] bytes = stream.toByteArray();
+
+
+
+                    intent.putExtra("data",bytes);
                     intent.putExtra("type","camera");
                     startActivityForResult(intent,321);
                 }
@@ -243,7 +265,13 @@ public class MainActivity extends AppCompatActivity {
 
                 bitmap = scaleDownBitmap(bitmap,100,getApplicationContext());
 
-                intent.putExtra("data",bitmap);
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                byte[] bytes = stream.toByteArray();
+
+
+
+                intent.putExtra("data",bytes);
                 intent.putExtra("type","gallery");
 
                 System.out.println("데이터는 모든 처리가 되었습니다");
