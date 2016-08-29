@@ -64,7 +64,7 @@
                 fab:menu_labels_paddingBottom="4dp"
                 fab:menu_labels_paddingLeft="8dp"
                 fab:menu_labels_padding="8dp"
-                fab:menu_labels_textColor="#FFFFFF"
+                fab:menu_labels_textColor="#000000"
                 fab:menu_labels_textSize="14sp"
                 fab:menu_labels_cornerRadius="3dp"
                 fab:menu_labels_colorNormal="#00333333"

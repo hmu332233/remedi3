@@ -32,7 +32,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/zoom"
+                    android:src="@drawable/expand_image"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentEnd="true" />
 
@@ -51,7 +51,7 @@
                     android:gravity="center"
                     android:text=" - 내용이 들어갈 칸입니다!" />
 
-                ㅗ<LinearLayout
+                <LinearLayout
                     android:id="@+id/layout_btn_input"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"

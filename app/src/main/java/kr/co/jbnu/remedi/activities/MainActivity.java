@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -26,12 +29,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 import kr.co.jbnu.remedi.R;
 import kr.co.jbnu.remedi.Utils.GlobalValue;
+import kr.co.jbnu.remedi.Utils.MakeFileName;
 import kr.co.jbnu.remedi.Utils.ProgressBarDialog;
 import kr.co.jbnu.remedi.Utils.SharePreferenceUtil;
 import kr.co.jbnu.remedi.adapters.BoardAdapter;
@@ -41,8 +49,14 @@ import kr.co.jbnu.remedi.models.Board;
 import kr.co.jbnu.remedi.models.Medicine;
 import kr.co.jbnu.remedi.models.Reply;
 import kr.co.jbnu.remedi.models.User;
+import kr.co.jbnu.remedi.serverIDO.ImageServerConnectionManager;
+import kr.co.jbnu.remedi.serverIDO.ImageServerConnectionService;
 import kr.co.jbnu.remedi.serverIDO.ServerConnectionManager;
 import kr.co.jbnu.remedi.serverIDO.ServerConnectionService;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -55,10 +69,11 @@ public class MainActivity extends AppCompatActivity {
 
     private ProgressBarDialog progressBarDialog;
     private Boolean isConnectionOk = false;
-
+    private Boolean isprofile = false;
 
     private ListView lvNavList;
     private FrameLayout flContainer;
+    private int pagenumber = GlobalValue.QUESTION_PAGENUMBER;
 
     private DrawerLayout dlDrawer;
     private ActionBarDrawerToggle dtToggle;
@@ -78,6 +93,15 @@ public class MainActivity extends AppCompatActivity {
 
         profile_email_textview.setText(User.getInstance().getEmail());
         profile_name_textview.setText(User.getInstance().getName());
+
+        de.hdodenhof.circleimageview.CircleImageView profileimageview = (de.hdodenhof.circleimageview.CircleImageView)findViewById(R.id.profile_imageview_setting);
+
+        if(User.getInstance().getProfile_imgname()!=null) {
+            System.out.println("세팅하는곳에 들어왔습니다");
+            if(User.getInstance().getProfile_imgname()!=null)Picasso.with(getApplicationContext()).load(Uri.parse(User.getInstance().getprofileuri())).error(R.drawable.ic_nocover).into(profileimageview);
+        }else{
+            System.out.println("프로파일이 널이랍니다");
+        }
 
         lvNavList = (ListView)findViewById(R.id.left_drawer);
 
@@ -102,13 +126,24 @@ public class MainActivity extends AppCompatActivity {
         dlDrawer.setDrawerListener(dtToggle);
 
         ImageButton settingimgbutton = (ImageButton)findViewById(R.id.setting_btn);
-        settingimgbutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dlDrawer.openDrawer(Gravity.LEFT);
+        settingimgbutton.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN: {
+                        v.getBackground().setColorFilter(0xe0f47521,PorterDuff.Mode.SRC_ATOP);
+                        v.invalidate();
+                        dlDrawer.openDrawer(Gravity.LEFT);
+                        break;
+                    }
+                    case MotionEvent.ACTION_UP: {
+                        v.getBackground().clearColorFilter();
+                        v.invalidate();
+                        break;
+                    }
+                }
+                return false;
             }
         });
-
 
 
         progressBarDialog = new ProgressBarDialog(MainActivity.this);
@@ -136,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
                     fabmenu.close(true);
                 }
             });
-
+            btn_pick_gallery.setLabelTextColor(Color.BLACK);
             com.github.clans.fab.FloatingActionButton btn_take_picture = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.btn_take_picture);
             btn_take_picture.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -144,15 +179,18 @@ public class MainActivity extends AppCompatActivity {
                     getTakeCamera();
                 }
             });
+            btn_take_picture.setLabelTextColor(Color.BLACK);
         }else{
 
             com.github.clans.fab.FloatingActionButton btn_pick_gallery = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.btn_pick_gallery);
-            btn_pick_gallery.setImageResource(R.drawable.checked1);
+            btn_pick_gallery.setImageResource(R.drawable.answer);
             btn_pick_gallery.setLabelText("답글 리스트 확인");
+            btn_pick_gallery.setLabelTextColor(Color.BLACK);
             btn_pick_gallery.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     progressBarDialog.show();
+                    pagenumber = GlobalValue.ANSWER_PAGENUMBER;
                     get_pharmacist_answerlist();
                     fabmenu.close(true);
 
@@ -162,12 +200,14 @@ public class MainActivity extends AppCompatActivity {
 
 
             com.github.clans.fab.FloatingActionButton btn_take_picture = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.btn_take_picture);
-            btn_take_picture.setImageResource(R.drawable.checked1);
+            btn_take_picture.setImageResource(R.drawable.question);
             btn_take_picture.setLabelText("질문 리스트 확인");
+            btn_take_picture.setLabelTextColor(Color.BLACK);
             btn_take_picture.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     progressBarDialog.show();
+                    pagenumber = GlobalValue.QUESTION_PAGENUMBER;
                     get_pharmacist_boardlist();
                     fabmenu.close(true);
                 }
@@ -177,6 +217,40 @@ public class MainActivity extends AppCompatActivity {
             //if(layout!=null) layout.removeView(btn_take_picture);
 
         }
+
+        ImageButton refereshbtn = (ImageButton)findViewById(R.id.refresh_btn);
+        refereshbtn.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN: {
+                        v.getBackground().setColorFilter(0xe0f47521, PorterDuff.Mode.SRC_ATOP);
+                        v.invalidate();
+                        progressBarDialog.show();
+
+                        if(User.getInstance().getUser_type().equals("normal")){
+                            get_normaluser_boardlist();
+                        }else{
+                            if(pagenumber==GlobalValue.QUESTION_PAGENUMBER){
+                                get_pharmacist_boardlist();
+                            }else{
+                                get_pharmacist_answerlist();
+                            }
+
+                        }
+
+                        break;
+                    }
+                    case MotionEvent.ACTION_UP: {
+                        v.getBackground().clearColorFilter();
+                        v.invalidate();
+                        break;
+                    }
+                }
+                return false;
+            }
+        });
+
+
 
 
 
@@ -251,7 +325,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
 
-            if( requestCode == GlobalValue.PICK_FROM_GALLERY)
+            if( requestCode == GlobalValue.PICK_FROM_GALLERY && isprofile == false)
             {
                 Uri imageURI = data.getData() ;
                 Log.d("알림", "이미지 가져오기 완료");
@@ -280,6 +354,23 @@ public class MainActivity extends AppCompatActivity {
 
                 System.out.println("데이터는 모든 처리가 되었습니다");
                 startActivityForResult(intent,321);
+            }else if(requestCode == GlobalValue.PICK_FROM_GALLERY && isprofile == true){
+                Uri imageURI = data.getData() ;
+                Bitmap bitmap = null;
+                try {
+                    bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageURI));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                bitmap = scaleDownBitmap(bitmap,100,getApplicationContext());
+                File imagefile = saveBitmap(bitmap);
+
+                System.out.println("프로파일 이미지 저장입니다.");
+                uploadFile(imagefile);
+                de.hdodenhof.circleimageview.CircleImageView profileimageview = (de.hdodenhof.circleimageview.CircleImageView)findViewById(R.id.profile_imageview_setting);
+                profileimageview.setImageURI(imageURI);
+
             }
 
             if( requestCode == 321 )
@@ -429,6 +520,7 @@ public class MainActivity extends AppCompatActivity {
                 if(boardlist!=null){
                     for(int i=0;i<boardlist.size();i++){
                         System.out.println("board 아이디 : "+boardlist.get(i).getId());
+                        if(boardlist.get(i).getUpdated_at()!=null) System.out.println("날짜 : "+boardlist.get(i).getUpdated_at().getTime());
                         if(boardlist.get(i).getAnswer()!=null){
                             Answer answer = boardlist.get(i).getAnswer();
                             System.out.println("답글 내용"+answer.getMedi_name()+answer.getMedi_company()+answer.getMedi_effect());
@@ -473,6 +565,7 @@ public class MainActivity extends AppCompatActivity {
                 if(boardlist!=null){
                     for(int i=0;i<boardlist.size();i++){
                         System.out.println("board 아이디 : "+boardlist.get(i).getId());
+                        if(boardlist.get(i).getUpdated_at()!=null) System.out.println("날짜 : "+boardlist.get(i).getUpdated_at().getTime());
                         if(boardlist.get(i).getAnswer()!=null){
                             Answer answer = boardlist.get(i).getAnswer();
                             System.out.println("답글 내용"+answer.getMedi_name()+answer.getMedi_company()+answer.getMedi_effect());
@@ -506,12 +599,15 @@ public class MainActivity extends AppCompatActivity {
         public void onItemClick(AdapterView<?> adapter, View view, int position,
                                 long id) {
             switch(position){
-                case 0:
+                case 0: // 프로필 이미지 변경
+                    isprofile = true;
+                    getImageFromGallery();
+                    //isprofile = false;
                     break;
-                case 1:
+                case 1: // 아이디 패스워드 변경
                     break;
 
-                case 2:
+                case 2: // 로그아웃
                     SharePreferenceUtil sharePreferenceUtil = SharePreferenceUtil.getInstance();
                     sharePreferenceUtil.deleteUser(getApplicationContext());
                     Intent intent = new Intent(MainActivity.this, IntroActivity.class);
@@ -565,7 +661,174 @@ public class MainActivity extends AppCompatActivity {
         }.start();
     }
 
+    private void uploadFile(File imagefile) {
+        progressBarDialog.show();
+        // create upload service client
+        System.out.println("이미지 업로드 요청");
+        String imagefilename = null;
+        ImageServerConnectionManager serverConnectionManager = ImageServerConnectionManager.getInstance();
+        ImageServerConnectionService service = serverConnectionManager.getServerConnection();
 
+
+        // https://github.com/iPaulPro/aFileChooser/blob/master/aFileChooser/src/com/ipaulpro/afilechooser/utils/FileUtils.java
+        // use the FileUtils to get the actual file by uri
+        File file = imagefile;
+
+        // create RequestBody instance from file
+        RequestBody requestFile =
+                RequestBody.create(MediaType.parse("multipart/form-data"), file);
+
+        // MultipartBody.Part is used to send also the actual file name
+        MultipartBody.Part body =
+                MultipartBody.Part.createFormData("picture", file.getName(), requestFile);
+
+        // add another part within the multipart request
+
+        imagefilename = file.getName();
+        imagefilename = MakeFileName.getInstance().makefilename(imagefilename);
+
+        RequestBody img_name =
+                RequestBody.create(
+                        MediaType.parse("multipart/form-data"), imagefilename);
+
+        final String serverimgname = imagefilename;
+        // finally, execute the request
+        Call<ResponseBody> call = service.upload(img_name, body);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call,
+                                   Response<ResponseBody> response) {
+                Log.v("Upload", "success");
+                deleteBitmap();
+                changeProfile(serverimgname);
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("Upload error:", t.getMessage());
+                deleteBitmap();
+            }
+        });
+    }
+
+    private File saveBitmap(Bitmap bitmap)
+    {
+        try{
+
+            File file = new File("data/data/kr.co.jbnu.remedi/files/test.png");
+            FileOutputStream fos = openFileOutput("test.png" , 0);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100 , fos);
+            fos.flush();
+            fos.close();
+
+            Toast.makeText(this, "file ok", Toast.LENGTH_SHORT).show();
+
+            return file;
+        }catch(Exception e) { Toast.makeText(this, "file error", Toast.LENGTH_SHORT).show();}
+
+        return null;
+    }
+
+    private void changeProfile(final String imgname){
+
+        System.out.println("프로파일 변경 요청");
+
+        ServerConnectionManager serverConnectionManager = ServerConnectionManager.getInstance();
+        ServerConnectionService serverConnectionService = serverConnectionManager.getServerConnection();
+
+        final Call<Void> service = serverConnectionService.change_profile_img(User.getInstance().getEmail(),imgname);
+        service.enqueue(new Callback<Void>() {
+
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                System.out.println("성공");
+                //progressBarDialog.dismiss();
+                SharePreferenceUtil shareutil = SharePreferenceUtil.getInstance();
+                User user = shareutil.getUser(getApplicationContext());
+                user.setProfile_imgname(imgname);
+                User.getInstance().setProfile_imgname(imgname);
+                shareutil.storeUser(user,getApplicationContext());
+                isprofile = false;
+
+                if(User.getInstance().getUser_type().equals("normal")){
+                    get_normaluser_boardlist();
+                }else{
+                    if(pagenumber==GlobalValue.QUESTION_PAGENUMBER){
+                        get_pharmacist_boardlist();
+                    }else{
+                        get_pharmacist_answerlist();
+                    }
+                }
+
+            }
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                //final TextView textView = (TextView) findViewById(R.id.textView);
+                //textView.setText("Something went wrong: " + t.getMessage());
+                //progressBarDialog.dismiss();
+                isprofile = false;
+                Log.w("서버 통신 실패",t.getMessage());
+            }
+        });
+    }
+
+    private void deleteBitmap()
+    {
+        try{
+            File file = new File("data/data/kr.co.jbnu.remedi/files/");
+            File[] flist = file.listFiles();
+            Toast.makeText(getApplicationContext(), "imgcnt = " + flist.length, Toast.LENGTH_SHORT).show();
+            for(int i = 0 ; i < flist.length ; i++)
+            {
+                String fname = flist[i].getName();
+                if(fname.equals("test.png"))
+                {
+                    flist[i].delete();
+                }
+            }
+        }catch(Exception e){Toast.makeText(getApplicationContext(), "파일 삭제 실패 ", Toast.LENGTH_SHORT).show();}
+    }
+
+    private void get_normaluser_boardlist(){
+        System.out.println("일반 유저 보드 데이터 요청");
+
+        ServerConnectionManager serverConnectionManager = ServerConnectionManager.getInstance();
+        ServerConnectionService serverConnectionService = serverConnectionManager.getServerConnection();
+
+
+
+        final Call<ArrayList<Board>> board = serverConnectionService.get_normaluser_board(User.getInstance().getEmail());
+        board.enqueue(new Callback<ArrayList<Board>>() {
+
+            @Override
+            public void onResponse(Call<ArrayList<Board>> call, Response<ArrayList<Board>> response) {
+
+                ArrayList<Board> boardlist = response.body();
+                User.getInstance().setUserBoardList(boardlist);
+                progressBarDialog.dismiss();
+                for(int i=0;i<boardlist.size();i++){
+                    System.out.println("board 아이디 : "+boardlist.get(i).getId());
+                    if(boardlist.get(i).getUpdated_at()!=null) System.out.println("날짜 : "+boardlist.get(i).getUpdated_at().getTime());
+                    if(boardlist.get(i).getAnswer()!=null){
+                        Answer answer = boardlist.get(i).getAnswer();
+                        System.out.println("답글 내용"+answer.getMedi_name()+answer.getMedi_company()+answer.getMedi_effect());
+                        ArrayList<Reply> replies = answer.getRepliesList();
+                        if(replies!=null){
+                            for(int j=0;j<replies.size();j++)
+                                System.out.println("댓글 내용 : "+replies.get(j).getContent());
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<ArrayList<Board>> call, Throwable t) {
+                //final TextView textView = (TextView) findViewById(R.id.textView);
+                //textView.setText("Something went wrong: " + t.getMessage());
+                //progressBarDialog.dismiss();
+                Log.w("서버 통신 실패",t.getMessage());
+            }
+        });
+    }
 
 
 

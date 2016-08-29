@@ -168,6 +168,10 @@ public class Answer implements Serializable {
         return pharm_name;
     }
 
+    public String getPharm_imgurl(){
+        return "http://kossi.iptime.org:2000/viate/getimg?imgname="+pharm_imgname;
+    }
+
     public void setPharm_name(String pharm_name) {
         this.pharm_name = pharm_name;
     }

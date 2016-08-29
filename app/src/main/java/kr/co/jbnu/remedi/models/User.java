@@ -103,4 +103,8 @@ public class User {
     public void setRegister_id(String register_id) {
         this.register_id = register_id;
     }
+
+    public String getprofileuri(){
+        return "http://kossi.iptime.org:2000/viate/getimg?imgname="+profile_imgname;
+    }
 }

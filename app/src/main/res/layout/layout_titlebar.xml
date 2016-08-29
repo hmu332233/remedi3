@@ -16,7 +16,7 @@
         android:background="@drawable/menub"
         android:layout_gravity="center"/>
     <ImageView
-        android:layout_weight="1.5"
+        android:layout_weight="2"
         android:layout_width="0dp"
         android:layout_height="35dp"
         android:layout_gravity="center"
@@ -30,11 +30,23 @@
         android:src="@mipmap/common_main_logo"/>
 
     <ImageView
-        android:layout_weight="3"
+        android:layout_weight="2"
         android:layout_width="0dp"
         android:layout_height="35dp"
         android:layout_gravity="center"
         />
+
+    <ImageButton
+        android:layout_marginLeft="10dp"
+        android:id="@+id/refresh_btn"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/reload"
+        android:layout_gravity="center"/>
+
+
+
 
 </LinearLayout>
 

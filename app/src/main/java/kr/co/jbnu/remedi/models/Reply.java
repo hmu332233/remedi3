@@ -12,21 +12,24 @@ public class Reply implements Serializable {
     private String userid;
     private String user_name;
     private int answer_id;
+    private String profile_imgname;
     private Date updated_at;
 
-    public Reply(int id, String content, String userid, int answer_id, Date updated_at,String user_name) {
+    public Reply(int id, String content, String userid, int answer_id, Date updated_at,String user_name,String profile_imgname) {
         this.id = id;
         this.content = content;
         this.userid = userid;
         this.answer_id = answer_id;
         this.updated_at = updated_at;
         this.user_name = user_name;
+        this.profile_imgname = profile_imgname;
     }
 
-    public Reply( String content, String username) {
+    public Reply( String content, String username,String profile_imgname) {
 
         this.content = content;
         this.user_name = username;
+        this.profile_imgname = profile_imgname;
 
     }
 
@@ -80,5 +83,17 @@ public class Reply implements Serializable {
 
     public void setUser_name(String user_name) {
         this.user_name = user_name;
+    }
+
+    public String getProfile_imgname() {
+        return profile_imgname;
+    }
+
+    public void setProfile_imgname(String profile_imgname) {
+        this.profile_imgname = profile_imgname;
+    }
+
+    public String getProfileUril(){
+        return "http://kossi.iptime.org:2000/viate/getimg?imgname="+profile_imgname;
     }
 }

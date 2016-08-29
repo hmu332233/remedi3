@@ -3,13 +3,16 @@ package kr.co.jbnu.remedi.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
 import android.net.Uri;
 import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -104,9 +107,12 @@ public class BoardAdapter extends ArrayAdapter<Board> {
                 layout_no_answer.setVisibility(View.GONE);
 
                 TextView tv_pharm_name = (TextView) item.findViewById(R.id.tv_pharm_name);
-                tv_pharm_name.setText(board.getAnswer().getPharm_name());
+                tv_pharm_name.setText(board.getAnswer().getPharm_name()+" 약사");
 
                 Answer answer = board.getAnswer();
+                de.hdodenhof.circleimageview.CircleImageView tv_pahrm_imageview = (de.hdodenhof.circleimageview.CircleImageView)item.findViewById(R.id.iv_pharm_image);
+                if(answer.getPharm_imgname()!=null)Picasso.with(context).load(Uri.parse(answer.getPharm_imgurl())).error(R.drawable.ic_nocover).into(tv_pahrm_imageview);
+
 
                 TextView tv_medicine_name;
                 TextView tv_medicine_element;
@@ -142,7 +148,7 @@ public class BoardAdapter extends ArrayAdapter<Board> {
                 final ListView lv_reply = (ListView) item.findViewById(R.id.lv_reply);
 
                 ViewGroup.LayoutParams params = lv_reply.getLayoutParams();
-                params.height = User.getInstance().getUserBoardList().get(position).getAnswer().getRepliesList().size()*123;
+                params.height = User.getInstance().getUserBoardList().get(position).getAnswer().getRepliesList().size()*getCellPhoneHeight()/10;
                 lv_reply.setLayoutParams(params);
                 lv_reply.requestLayout();
 
@@ -171,6 +177,10 @@ public class BoardAdapter extends ArrayAdapter<Board> {
 
                 cv_reply.setVisibility(View.VISIBLE);
 
+                de.hdodenhof.circleimageview.CircleImageView currentuser_replyimg = (de.hdodenhof.circleimageview.CircleImageView)item.findViewById(R.id.iv_profile_image);
+                if(User.getInstance().getProfile_imgname()!=null)Picasso.with(context).load(Uri.parse(User.getInstance().getprofileuri())).error(R.drawable.ic_nocover).into(currentuser_replyimg);
+
+
                 final EditText et_reply = (EditText) item.findViewById(R.id.et_reply);
 
                 et_reply.setOnKeyListener(new View.OnKeyListener() {
@@ -188,11 +198,11 @@ public class BoardAdapter extends ArrayAdapter<Board> {
                                 arr = new ArrayList<Reply>();
                                 System.out.println("답글 리스트 널입니다");
                             }
-                            User.getInstance().getUserBoardList().get(position).getAnswer().getRepliesList().add(new Reply(content,User.getInstance().getName()));
+                            User.getInstance().getUserBoardList().get(position).getAnswer().getRepliesList().add(new Reply(content,User.getInstance().getName(),User.getInstance().getProfile_imgname()));
                             register_reply(content,User.getInstance().getEmail(),User.getInstance().getUserBoardList().get(position).getAnswer().getId());
 
                             ViewGroup.LayoutParams params = lv_reply.getLayoutParams();
-                            params.height = User.getInstance().getUserBoardList().get(position).getAnswer().getRepliesList().size()*123;
+                            params.height = User.getInstance().getUserBoardList().get(position).getAnswer().getRepliesList().size()*getCellPhoneHeight()/10;
                             lv_reply.setLayoutParams(params);
                             lv_reply.requestLayout();
 
@@ -204,6 +214,32 @@ public class BoardAdapter extends ArrayAdapter<Board> {
                         }
 
                         return false;
+                    }
+                });
+
+
+                info.hoang8f.widget.FButton btn_add_answer = (info.hoang8f.widget.FButton)item.findViewById(R.id.register_reply_btn);
+                btn_add_answer.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String content = et_reply.getText().toString();
+
+                        ArrayList<Reply> arr = User.getInstance().getUserBoardList().get(position).getAnswer().getRepliesList();
+                        if(arr==null) {
+                            arr = new ArrayList<Reply>();
+                            System.out.println("답글 리스트 널입니다");
+                        }
+                        User.getInstance().getUserBoardList().get(position).getAnswer().getRepliesList().add(new Reply(content,User.getInstance().getName(),User.getInstance().getProfile_imgname()));
+                        register_reply(content,User.getInstance().getEmail(),User.getInstance().getUserBoardList().get(position).getAnswer().getId());
+
+                        ViewGroup.LayoutParams params = lv_reply.getLayoutParams();
+                        params.height = User.getInstance().getUserBoardList().get(position).getAnswer().getRepliesList().size()*getCellPhoneHeight()/10;
+                        lv_reply.setLayoutParams(params);
+                        lv_reply.requestLayout();
+
+                        et_reply.setText("");
+                        //replyAdapter.insert(new Reply(content,User.getInstance().getName()),0);
+                        replyAdapter.notifyDataSetChanged();
                     }
                 });
 
@@ -235,7 +271,7 @@ public class BoardAdapter extends ArrayAdapter<Board> {
                         layout_input.setVisibility(View.VISIBLE);
                     }
                     ViewGroup.LayoutParams params = cardViewinanswer.getLayoutParams();
-                    params.height = 800;
+                    params.height = getCellPhoneHeight()*2/3;
                     cardViewinanswer.setLayoutParams(params);
                     cardViewinanswer.requestLayout();
 /*
@@ -306,7 +342,7 @@ public class BoardAdapter extends ArrayAdapter<Board> {
         ServerConnectionService serverConnectionService = serverConnectionManager.getServerConnection();
 
 
-        final Call<Boolean> reply = serverConnectionService.register_reply(content,email,answer_id,User.getInstance().getName());
+        final Call<Boolean> reply = serverConnectionService.register_reply(content,email,answer_id,User.getInstance().getName(),User.getInstance().getProfile_imgname());
         reply.enqueue(new Callback<Boolean>() {
 
             @Override
@@ -327,5 +363,14 @@ public class BoardAdapter extends ArrayAdapter<Board> {
         this.borads = boardss;
     }
 
+    private int getCellPhoneHeight(){
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        //int width = size.x;
+        int height = size.y;
 
+        return height;
+    }
 }

@@ -47,7 +47,7 @@ public interface ServerConnectionService {
 
     @FormUrlEncoded
     @POST("/mobile/register_reply")
-    Call<Boolean> register_reply(@Field("content") String content,@Field("email") String email,@Field("answer_id") int answer_id,@Field("user_name") String user_name);
+    Call<Boolean> register_reply(@Field("content") String content,@Field("email") String email,@Field("answer_id") int answer_id,@Field("user_name") String user_name,@Field("profile_imgname") String profile_imgname);
 
 
 
@@ -69,7 +69,7 @@ public interface ServerConnectionService {
 
     @FormUrlEncoded
     @POST("/mobile/change_profile_img")
-    String change_profile_img(@Field("ID") String ID);
+    Call<Void> change_profile_img(@Field("email") String email,@Field("imgname") String imgname);
 
 
 }

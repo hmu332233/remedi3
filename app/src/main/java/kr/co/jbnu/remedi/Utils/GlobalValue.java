@@ -10,4 +10,7 @@ public class GlobalValue {
 
     public static int GET_MEDICINE = 0;
     public static String ImageServerURL = "http://kossi.iptime.org:2000/viate/getimg?imgname=";
+    public static int ANSWER_PAGENUMBER = 0;
+    public static int QUESTION_PAGENUMBER = 1;
+    //
 }
