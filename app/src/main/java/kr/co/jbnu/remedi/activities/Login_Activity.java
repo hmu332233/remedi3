@@ -116,38 +116,41 @@ public class Login_Activity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "아이디 혹은 패스워드 오류", Toast.LENGTH_SHORT).show();
                     progressBarDialog.dismiss();
                 }
-                else{
+                else{ // 로그인해서 데이터를 가져옴
                     Toast.makeText(getApplicationContext(), "로그인 성공"+user.getEmail(), Toast.LENGTH_SHORT).show();
-                    if(auto_login_checkbox.isChecked()){
-                        SharePreferenceUtil shareutil = SharePreferenceUtil.getInstance();
-                        shareutil.storeUser(User.getInstance(),getApplicationContext());
-                    }
 
                     if(user.getRegister_id()==null){ // 웹에서 회원가입을 한경우
-                        if(getRegistrationId()!=null) { // 현재 레지스트레이션 아이디가 존재한다면 서버에 저장한다.
-                            registration_id = getRegistrationId();
-                            User.getInstance().setRegister_id(registration_id);
-                            updateRegisterId();
-                        }else{ // 아에 없는 경우임으로 새로 발급한다.
-                            getRegisterIdFromServer();
-                        }
-                    }else{
-                        if(getRegistrationId()!=null){
-                            if(getRegistrationId().equals(User.getInstance().getRegister_id())==false){ // 레지스트아이디가 있는데 현재 아이디와 서버의 아이디가 다르면 현재 있는 것을 서버에 저장한다.
-                                registration_id = getRegistrationId();
-                                updateRegisterId();
-                            }else{// 기존 사용자임으로 그냥 진행하면 된다.
-
-                                if(User.getInstance().getUser_type().equals("normal")) get_normaluser_boardlist();
+                        //if(getRegistrationId()!=null) { // 현재 레지스트레이션 아이디가 존재한다면 서버에 저장한다.
+                            //registration_id = getRegistrationId();
+                            //User.getInstance().setRegister_id(registration_id);
+                            //updateRegisterId();
+                        //}else{ // 아에 없는 경우임으로 새로 발급한다.
+                            System.out.println("레그키 데이터가 없는경우");
+                            getRegisterIdFromServer(); // 쉐어드에 있든 없든 다시 발급받는다
+                        //}
+                    }else{ // 서버에서 레지스트레이션 아이디를 가져온경우
+                        if(getRegistrationId()!=null) { // 그전에 폰에서 레지스트레이션 아이디를 발급했던경우
+                            if (getRegistrationId().equals(User.getInstance().getRegister_id()) == false) { // 현재 핸드폰이 다른 핸드폰일 경우
+                                //새로 발급 받는다.
+                                System.out.println("다른 핸드폰에서 가입한경우");
+                                getRegisterIdFromServer();
+                            } else {// 기존 사용자임으로 그냥 진행하면 된다.
+                                System.out.println("모든것이 잘 된경우");
+                                if (User.getInstance().getUser_type().equals("normal"))
+                                    get_normaluser_boardlist();
                                 else get_pharmacist_boardlist();
 
 
                             }
-                        }else{ //웹에서 가져온 레지스트 레이션을 preferecne에 저장하고 진행한다.
-                            storeRegistrationId(User.getInstance().getRegister_id());
-                            if(User.getInstance().getUser_type().equals("normal")) get_normaluser_boardlist();
-                            else get_pharmacist_boardlist();
+                        }else{
+                            getRegisterIdFromServer();
                         }
+                        /*
+                        else{ //웹에서 가져온 레지스트 레이션을 preferecne에 저장하고 진행한다.
+                            getRegisterIdFromServer();//storeRegistrationId(User.getInstance().getRegister_id());
+                            //if(User.getInstance().getUser_type().equals("normal")) get_normaluser_boardlist();
+                            //else get_pharmacist_boardlist();
+                        }*/
                     }
                 }
 
@@ -180,6 +183,7 @@ public class Login_Activity extends AppCompatActivity {
                 //is_exist = response.body();
                 System.out.println("존재 하는 값 ");
                 Toast.makeText(getApplicationContext(), "register업데이트 완료", Toast.LENGTH_SHORT).show();
+
                 if(User.getInstance().getUser_type().equals("normal")) get_normaluser_boardlist();
                 else get_pharmacist_boardlist();
             }
@@ -361,6 +365,13 @@ public class Login_Activity extends AppCompatActivity {
                         }
                     }
                 }
+
+                if(auto_login_checkbox.isChecked()){
+                    User.getInstance().setRegister_id(getRegistrationId());
+                    SharePreferenceUtil shareutil = SharePreferenceUtil.getInstance();
+                    shareutil.storeUser(User.getInstance(),getApplicationContext());
+                }
+
                 Intent intent = new Intent(Login_Activity.this, MainActivity.class);
                 startActivity(intent);
                 finish();
@@ -406,6 +417,12 @@ public class Login_Activity extends AppCompatActivity {
                     }
                 }
 
+
+                if(auto_login_checkbox.isChecked()){
+                    User.getInstance().setRegister_id(getRegistrationId());
+                    SharePreferenceUtil shareutil = SharePreferenceUtil.getInstance();
+                    shareutil.storeUser(User.getInstance(),getApplicationContext());
+                }
                 Intent intent = new Intent(Login_Activity.this, MainActivity.class);
                 startActivity(intent);
                 finish();
@@ -420,6 +437,7 @@ public class Login_Activity extends AppCompatActivity {
             }
         });
     }
+
 
 
 
